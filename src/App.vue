@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import HelloWorld from './components/HelloWorld.vue'
+import CesiumMap from './components/cesium/CesiumMap.vue'
 </script>
 
 <template>
-  <HelloWorld />
+  <CesiumMap />
 </template>
 
 <style scoped>
