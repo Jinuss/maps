@@ -55,15 +55,40 @@ const getAddress = () => {
       });
   }
 };
+
 const setMap = (map, layers) => {
   MAP = map;
   LAYERS = layers;
+};
+
+const kw = ref("");
+
+const options = ref([]);
+
+const remoteMethod = (query) => {
+  kw.value = query;
+  if (query) {
+    fetch(
+      `http://api.tianditu.gov.cn/v2/search?postStr={"keyWord":"${query}","level":3,"mapBound":"74,3,136,53","sourceType":0,"yingjiType":1,"queryType":4,"start":0,"count":10,"queryTerminal":10000}&type=query&tk=${tk}`
+    )
+      .then((resp) => {
+        if (!resp.ok) {
+          throw new Error("请求失败");
+        }
+        return resp.json();
+      })
+      .then((data) => {
+        console.log(data);
+        const { suggests } = data;
+        options.value = suggests;
+      });
+  }
 };
 </script>
 <template>
   <div class="home">
     <div class="header">
-      <el-form-item label="POI:">
+      <!-- <el-form-item label="POI:">
         <el-input
           placeholder="请输入搜索位置"
           v-model="address"
@@ -73,7 +98,26 @@ const setMap = (map, layers) => {
             <el-button :icon="Search" type="primary" />
           </template>
         </el-input>
-      </el-form-item>
+      </el-form-item> -->
+
+      <el-select
+        v-model="kw"
+        filterable
+        remote
+        reserve-keyword
+        placeholder="搜索位置"
+        :remote-method="remoteMethod"
+        style="width: 240px"
+      >
+        <template v-for="item in options" :key="item.gbCode">
+          <el-option :label="item.address" :value="item.gbCode">
+            <span style="">{{ item.name }}</span>
+            <span style="margin-left:10px; color: #909399; font-size: 13px">
+              {{ item.address }}
+            </span>
+          </el-option>
+        </template>
+      </el-select>
     </div>
     <div class="map-container">
       <Map @setMap="setMap" />
