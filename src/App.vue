@@ -1,14 +1,13 @@
 <script setup lang="ts">
-import CesiumMap from './components/cesium/CesiumMap.vue'
-import Map from './components/map/index.vue'
-
+import Home from "./view/home.vue";
+// import CesiumMap from './components/cesium/CesiumMap.vue'
+// import Map from './components/map/index.vue'
 </script>
 
 <template>
+  <home />
   <!-- <CesiumMap /> -->
-   <Map />
+  <!-- <Map /> -->
 </template>
 
-<style scoped>
-
-</style>
+<style scoped></style>

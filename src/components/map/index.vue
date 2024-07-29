@@ -1,28 +1,50 @@
 <script setup>
 import { ref, onMounted } from "vue";
+import Map from "ol/Map";
+import View from "ol/View";
+import * as olProj from "ol/proj";
+import VectorLayer from "ol/layer/Vector";
+import TileLayer from "ol/layer/Tile";
+import XYZ from "ol/source/XYZ";
+import VectorSource from "ol/source/Vector";
+import { FullScreen, defaults as defaultControls, ScaleLine } from "ol/control";
 import { AMAP_URL, GOOGLE_URL } from "../map/layer.js";
-import { getTileLayer } from "../map/utils.js";
-
+import "ol/ol.css";
+function getTileLayer(url, visible) {
+  return new TileLayer({
+    source: new XYZ({
+      url: url,
+      wrapX: false,
+    }),
+  });
+}
 const AMAP_LAYER = getTileLayer(AMAP_URL, true);
 
 const GOOGLE_LAYER = getTileLayer(GOOGLE_URL, true);
 
-var vectorLayer = new ol.layer.Vector({
-  source: new ol.source.Vector(),
+var vectorLayer = new VectorLayer({
+  source: new VectorSource(),
 });
 
+const emit = defineEmits(["setMap"]);
+
 onMounted(() => {
-  const map = new ol.Map({
+  const layers = { AMAP_LAYER, GOOGLE_LAYER, vectorLayer };
+  const map = new Map({
     layers: [AMAP_LAYER, GOOGLE_LAYER, vectorLayer],
     target: "map",
-    view: new ol.View({
-      center: ol.proj.fromLonLat([114.3005, 30.5928]),
-      zoom: 10,
-      minZoom: 4,
-      maxZoom: 18,
+    view: new View({
+      center: olProj.fromLonLat([114.3005, 30.5928]),
+      zoom: 5,
+      minZoom: 1,
+      maxZoom: 22,
     }),
   });
 
+  map.addControl(new FullScreen());
+  map.addControl(new ScaleLine());
+
+  emit("setMap", map, layers);
   GOOGLE_LAYER.setVisible(false);
 });
 </script>
