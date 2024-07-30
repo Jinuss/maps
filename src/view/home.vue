@@ -97,18 +97,11 @@ const remoteMethod = (query) => {
           <template #append>
             <el-button :icon="Search" type="primary" />
           </template>
-        </el-input>
-      </el-form-item> -->
+</el-input>
+</el-form-item> -->
 
-      <el-select
-        v-model="kw"
-        filterable
-        remote
-        reserve-keyword
-        placeholder="搜索位置"
-        :remote-method="remoteMethod"
-        style="width: 240px"
-      >
+      <el-select v-model="kw" filterable remote reserve-keyword placeholder="搜索位置" :remote-method="remoteMethod"
+        style="width: 240px">
         <template v-for="item in options" :key="item.gbCode">
           <el-option :label="item.address" :value="item.gbCode">
             <span style="">{{ item.name }}</span>
@@ -130,6 +123,7 @@ const remoteMethod = (query) => {
   width: 100%;
   background: #fff;
 }
+
 .header {
   height: 60px;
   display: flex;
@@ -137,8 +131,9 @@ const remoteMethod = (query) => {
   align-content: center;
   padding: 0 20px;
 }
+
 .map-container {
-  height: calc(100% - 80px);
+  height: calc(100% - 60px);
   width: 100%;
 }
 </style>

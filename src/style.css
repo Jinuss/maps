@@ -8,8 +8,34 @@ body {
   padding: 0;
   height: 100%;
   width: 100%;
+  font-size: 14px;
+  font-variant: tabular-nums;
+  line-height: 1.5715;
 }
 
 #app {
   height: 100%;
+}
+
+.anticon {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  align-items: center;
+  color: inherit;
+  display: inline-flex;
+  font-style: normal;
+  line-height: 0;
+  text-align: center;
+  text-rendering: optimizelegibility;
+  text-transform: none;
+  vertical-align: -.125em;
+  font-size: 22px;
+}
+
+.anticon>* {
+  line-height: 1;
+}
+
+.anticon svg {
+  display: inline-block;
 }

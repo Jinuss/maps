@@ -13,6 +13,7 @@ import trp from "./trp.vue";
 import card from "./card.vue";
 import "ol/ol.css";
 import "./style.css";
+import { MapTools } from './utools.tsx'
 function getTileLayer(url, visible) {
   return new TileLayer({
     source: new XYZ({
@@ -31,6 +32,8 @@ var vectorLayer = new VectorLayer({
 
 const emit = defineEmits(["setMap"]);
 
+let MapTool = null
+
 onMounted(() => {
   const layers = { AMAP_LAYER, GOOGLE_LAYER, vectorLayer };
   const map = new Map({
@@ -46,21 +49,35 @@ onMounted(() => {
 
   map.addControl(new FullScreen());
   map.addControl(new ScaleLine());
-
+  MapTool = new MapTools(map, layers, 'draw')
   emit("setMap", map, layers);
   GOOGLE_LAYER.setVisible(false);
 });
 
-const operateMap = () => {
+const showCard = ref(false)
+
+const changeCardVisible = (visible) => {
+  showCard.value = visible
+}
+const operateMap = (type) => {
+  console.log("🚀 ~ operateMap ~ type:", type)
   document.querySelectorAll('.ol-viewport').forEach(i => {
     i.classList.add('draw')
   })
+  MapTool.removeListener()
+  MapTool.addListener(type)
+  changeCardVisible(true)
 }
+
+const getEventByCard = () => {
+  changeCardVisible(false)
+}
+
 </script>
 <template>
   <div id="map">
     <trp @operateMap="operateMap" />
-    <card />
+    <card v-if="showCard" @getEventByCard="getEventByCard" />
   </div>
 </template>
 <style scoped>
