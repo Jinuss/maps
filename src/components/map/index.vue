@@ -9,7 +9,10 @@ import XYZ from "ol/source/XYZ";
 import VectorSource from "ol/source/Vector";
 import { FullScreen, defaults as defaultControls, ScaleLine } from "ol/control";
 import { AMAP_URL, GOOGLE_URL } from "../map/layer.js";
+import trp from "./trp.vue";
+import card from "./card.vue";
 import "ol/ol.css";
+import "./style.css";
 function getTileLayer(url, visible) {
   return new TileLayer({
     source: new XYZ({
@@ -47,9 +50,18 @@ onMounted(() => {
   emit("setMap", map, layers);
   GOOGLE_LAYER.setVisible(false);
 });
+
+const operateMap = () => {
+  document.querySelectorAll('.ol-viewport').forEach(i => {
+    i.classList.add('draw')
+  })
+}
 </script>
 <template>
-  <div id="map"></div>
+  <div id="map">
+    <trp @operateMap="operateMap" />
+    <card />
+  </div>
 </template>
 <style scoped>
 #map {

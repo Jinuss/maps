@@ -1,0 +1,6 @@
+.ol-viewport canvas {
+  cursor: grab;
+}
+.ol-viewport.draw canvas {
+  cursor: crosshair;
+}

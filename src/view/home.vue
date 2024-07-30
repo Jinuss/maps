@@ -112,7 +112,7 @@ const remoteMethod = (query) => {
         <template v-for="item in options" :key="item.gbCode">
           <el-option :label="item.address" :value="item.gbCode">
             <span style="">{{ item.name }}</span>
-            <span style="margin-left:10px; color: #909399; font-size: 13px">
+            <span style="margin-left: 10px; color: #909399; font-size: 13px">
               {{ item.address }}
             </span>
           </el-option>
@@ -131,7 +131,7 @@ const remoteMethod = (query) => {
   background: #fff;
 }
 .header {
-  height: 80px;
+  height: 60px;
   display: flex;
   align-items: center;
   align-content: center;
