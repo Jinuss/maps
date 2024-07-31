@@ -1,5 +1,6 @@
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, onBeforeUnmount } from "vue";
+import { EventBus } from '../../util/index'
 
 const currentColor = ref("#262626")
 const ulRef = ref()
@@ -10,6 +11,7 @@ const removeClass = () => {
 }
 
 const emit = defineEmits(["operateMap"])
+
 
 onMounted(() => {
     if (ulRef && ulRef.value) {
@@ -22,14 +24,18 @@ onMounted(() => {
             })
         })
     }
+    EventBus.on('cancel', removeClass)
 })
 
+onBeforeUnmount(()=>{
+    EventBus.off('cancel', removeClass)
+})
 
 </script>
 <template>
     <ul class="Draw_draw__UPVhb" ref="ulRef">
         <li class="point">
-            <el-tooltip class="box-item" effect="dark" content="标点" placement="left" offset="20">
+            <el-tooltip class="box-item" effect="dark" content="标点" placement="left" :offset="20">
                 <span role="img" class="anticon">
                     <svg width="1em" height="1em" :fill="currentColor" aria-hidden="true" focusable="false" class="">
                         <use xlink:href="#icon-point"></use>
@@ -38,7 +44,7 @@ onMounted(() => {
             </el-tooltip>
         </li>
         <li class="line">
-            <el-tooltip class="box-item" effect="dark" content="标线" placement="left" offset="20">
+            <el-tooltip class="box-item" effect="dark" content="标线" placement="left" :offset="20">
                 <span role="img" class="anticon">
                     <svg width="1em" height="1em" :fill="currentColor" aria-hidden="true" focusable="false" class="">
                         <use xlink:href="#icon-line"></use>
@@ -46,7 +52,7 @@ onMounted(() => {
             </el-tooltip>
         </li>
         <li class="polygon">
-            <el-tooltip class="box-item" effect="dark" content="标面" placement="left" offset="20">
+            <el-tooltip class="box-item" effect="dark" content="标面" placement="left" :offset="20">
                 <span role="img" class="anticon"><svg width="1em" height="1em" :fill="currentColor" aria-hidden="true"
                         focusable="false" class="">
                         <use xlink:href="#icon-polygon"></use>
@@ -54,7 +60,7 @@ onMounted(() => {
             </el-tooltip>
         </li>
         <li class="circle">
-            <el-tooltip class="box-item" effect="dark" content="画圆" placement="left" offset="20">
+            <el-tooltip class="box-item" effect="dark" content="画圆" placement="left" :offset="20">
                 <span role="img" class="anticon"><svg width="1em" height="1em" :fill="currentColor" aria-hidden="true"
                         focusable="false" class="">
                         <use xlink:href="#icon-circle"></use>
@@ -62,7 +68,7 @@ onMounted(() => {
             </el-tooltip>
         </li>
         <li class="rect">
-            <el-tooltip class="box-item" effect="dark" content="画矩形" placement="left" offset="20">
+            <el-tooltip class="box-item" effect="dark" content="画矩形" placement="left" :offset="20">
                 <span role="img" class="anticon"><svg width="1em" height="1em" :fill="currentColor" aria-hidden="true"
                         focusable="false" class="">
                         <use xlink:href="#icon-rect"></use>
@@ -70,7 +76,7 @@ onMounted(() => {
             </el-tooltip>
         </li>
         <li class="measure-distance">
-            <el-tooltip class="box-item" effect="dark" content="测距" placement="left" offset="20">
+            <el-tooltip class="box-item" effect="dark" content="测距" placement="left" :offset="20">
                 <span role="img" class="anticon"><svg width="1em" height="1em" :fill="currentColor" aria-hidden="true"
                         focusable="false" class="">
                         <use xlink:href="#icon-measure-distance"></use>
@@ -78,7 +84,7 @@ onMounted(() => {
             </el-tooltip>
         </li>
         <li class="measure-polygon">
-            <el-tooltip class="box-item" effect="dark" content="测面" placement="left" offset="20">
+            <el-tooltip class="box-item" effect="dark" content="测面" placement="left" :offset="20">
                 <span role="img" class="anticon"><svg width="1em" height="1em" :fill="currentColor" aria-hidden="true"
                         focusable="false" class="">
                         <use xlink:href="#icon-measure-polygon"></use>
