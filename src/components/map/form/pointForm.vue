@@ -23,6 +23,7 @@ watch(() => props.uid, (newVal) => {
 
 const changeColor = (color) => {
     document.querySelector(`#marker_${form.uid}`).style.borderColor = color
+    changeMarkerIcon(color)
 }
 
 const changeSize = (size) => {
@@ -48,14 +49,15 @@ const changeSize = (size) => {
         markers[form.uid].overlay = overlay
     }
 }
-const changeMarkerIcon = () => {
+const changeMarkerIcon = (color) => {
     let { marker: targetMarker, } = markers[form.uid]
     if (targetMarker) {
+        const originStyle = targetMarker.getStyle()
         var markerStyle = new Style({
             image: new Icon({
                 anchor: [0.5, 1],
-                src: getSVGElementById(true),
-                scale: 2,
+                src: getSVGElementById(true, color),
+                scale: originStyle.getImage().getScale(),
             }),
         });
         targetMarker.setStyle(markerStyle);

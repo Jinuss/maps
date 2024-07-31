@@ -94,7 +94,6 @@ export class MapTools {
         if (feature instanceof Feature) {
           // 这是点击的标记 feature
           that.callback();
-          // 处理点击事件的逻辑
         }
       });
     });
