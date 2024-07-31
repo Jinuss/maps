@@ -1,14 +1,81 @@
 <script setup>
-import { reactive } from 'vue';
+import { reactive, watch, onMounted } from 'vue';
+import { Style, Icon } from "ol/style";
+import Overlay from 'ol/Overlay'
+import locImgSrc from "../../../assets/loc.png";
+import { getSVGElementById } from "../../../util/index.js";
+
+const props = defineProps({
+    uid: String
+})
+
 const form = reactive({
+    uid: props.uid,
     color: "#409EFF",
-    size: 10,
+    size: 25,
     showName: true,
     name: "point"
 })
+
+watch(() => props.uid, (newVal) => {
+    form.uid = newVal
+})
+
+const changeColor = (color) => {
+    document.querySelector(`#marker_${form.uid}`).style.borderColor = color
+}
+
+const changeSize = (size) => {
+    console.log("🚀 ~ changeSize ~ size:", size)
+    let { marker: targetMarker, overlay: targetOverlay } = markers[form.uid]
+    let rate = size / 25
+    if (targetMarker) {
+        var markerStyle = targetMarker.getStyle();
+        var img = markerStyle.getImage()
+        img.setScale(rate)
+        targetMarker.setStyle(markerStyle);
+    }
+
+    if (targetOverlay) {
+        map.removeOverlay(targetOverlay);
+        let overlay = new Overlay({
+            element: targetOverlay.getElement(),
+            position: targetOverlay.getPosition(),
+            offset: [15 * rate, -30 * rate]
+        });
+
+        map.addOverlay(overlay);
+        markers[form.uid].overlay = overlay
+    }
+}
+const changeMarkerIcon = () => {
+    let { marker: targetMarker, } = markers[form.uid]
+    if (targetMarker) {
+        var markerStyle = new Style({
+            image: new Icon({
+                anchor: [0.5, 1],
+                src: getSVGElementById(true),
+                scale: 2,
+            }),
+        });
+        targetMarker.setStyle(markerStyle);
+    }
+}
+
+
+onMounted(() => {
+    const aSpan = document.querySelectorAll('.icon_container i');
+    aSpan.forEach(iSpan => {
+        iSpan.addEventListener('click', () => {
+            var backgroundImage = iSpan.getAttribute('data-image');
+            console.log('Clicked on:', backgroundImage);
+            changeMarkerIcon()
+        })
+    })
+})
 </script>
 <template>
-    <el-form :model="form" label-width="auto" style="max-width: 600px">
+    <el-form :model="form" label-width="auto" style="max-width: 600px" :class="form.uid">
         <el-form-item label="符号集合:">
             <div class="icon_container">
                 <span><i class="cy"></i><span>餐饮</span></span>
@@ -31,10 +98,10 @@ const form = reactive({
             </div>
         </el-form-item>
         <el-form-item label="符号颜色:">
-            <el-color-picker v-model="form.color" />
+            <el-color-picker v-model="form.color" @change="changeColor" show-alpha />
         </el-form-item>
         <el-form-item label="符号大小:">
-            <el-input-number v-model="form.size" :step="1" :precision="0" :max="50" :min="10" />
+            <el-input-number v-model="form.size" :step="1" :precision="0" :max="50" :min="16" @change="changeSize" />
         </el-form-item>
         <el-form-item label="显示名称:">
             <el-switch v-model="form.showName" />

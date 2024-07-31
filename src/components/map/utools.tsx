@@ -3,17 +3,19 @@ import Feature from "ol/Feature";
 import * as olStyle from "ol/style";
 import { Point } from "ol/geom";
 import Overlay from "ol/Overlay";
-import locImgSrc from "../../assets/loc.png";
-import { EventBus } from "../../util/index.js";
+import { v4 as uuidv4 } from "uuid";
+import { EventBus, getSVGElementById } from "../../util/index.js";
 
 // 创建 overlay 内容的函数
-function createOverlayElement(content: string) {
+function createOverlayElement(content: string, uid: string) {
   var element = document.createElement("div");
-  element.className = "popMarker";
+  element.className = `popMarker`;
+  element.id = `marker_${uid}`;
   element.innerHTML = content;
   return element;
 }
 
+window.markers = {};
 export class MapTools {
   map: any = null;
   layers: any = null;
@@ -21,6 +23,7 @@ export class MapTools {
   handle: any = () => {};
   callback: Function = () => {};
   mapEl = document.querySelector(".ol-viewport");
+  currentUUID: string = "";
 
   constructor(
     map: any,
@@ -29,12 +32,14 @@ export class MapTools {
     callback: Function = () => {}
   ) {
     this.map = map;
+    window.map = map;
     this.layers = layers;
     this.type = type;
     this.handle = (event: { coordinate: any }) => {
       // 获取点击位置的坐标
       const coord = event.coordinate;
       console.log("🚀 ~ MapTools ~ constructor ~ coord:", coord);
+      this.currentUUID = uuidv4().replace(/-/g, "");
       this.addMarker(coord);
     };
     this.callback = callback;
@@ -52,22 +57,22 @@ export class MapTools {
   addMarker(coordinate: Coordinate) {
     const that = this;
     let marker = new Feature({
+      id: that.currentUUID,
       geometry: new Point(coordinate),
     });
-    // 创建一个标记的图标样式
+
     var markerStyle = new olStyle.Style({
       image: new olStyle.Icon({
-        anchor: [0.5, 1], // 图标中心点在底部中心
-        src: locImgSrc, // 图标的 URL
+        anchor: [0.5, 1], 
+        src: getSVGElementById(),
+        scale: 1,
       }),
-      zIndex: 6,
     });
     marker.setStyle(markerStyle);
-
     that.layers.vectorLayer.getSource().addFeature(marker);
     // 创建一个 overlay
     var overlay = new Overlay({
-      element: createOverlayElement("Your text content"), // 创建 overlay 的内容
+      element: createOverlayElement("Your text content", that.currentUUID), // 创建 overlay 的内容
       positioning: "bottom-center",
       offset: [15, -30], // 调整文本位置
       position: coordinate,
@@ -75,10 +80,15 @@ export class MapTools {
 
     // 将 overlay 添加到地图中
     that.map.addOverlay(overlay);
+
+    markers[that.currentUUID] = {
+      marker,
+      overlay,
+    };
     that.removeListener();
     EventBus.emit("cancel");
 
-    that.callback();
+    that.callback(that.currentUUID);
     that.map.on("click", (event: { pixel: any }) => {
       that.map.forEachFeatureAtPixel(event.pixel, (feature: any) => {
         if (feature instanceof Feature) {

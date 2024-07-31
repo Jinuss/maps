@@ -1,6 +1,16 @@
 <script setup>
-import { ref, reactive } from 'vue';
+import { ref, reactive, watch } from 'vue';
 import pointForm from './form/pointForm.vue';
+
+const props = defineProps({
+    uid: String
+})
+
+const uid = ref(props.uid)
+
+watch(() => props.uid, (newVal) => {
+    uid.value = newVal
+})
 
 const form = reactive({ name: "" })
 
@@ -11,7 +21,7 @@ const handleClose = () => {
 }
 </script>
 <template>
-    <div class="card_panel">
+    <div class="card_panel" :key="uid">
         <div class="card_header">
             <span>标点</span>
             <span role="img" tabindex="-1" class="anticon Head_close__0vFMi" @click="handleClose">
@@ -32,7 +42,7 @@ const handleClose = () => {
                     </el-form>
                     <div class="styleSet">
                         <div class="styleSetTitle">样式设置</div>
-                        <pointForm />
+                        <pointForm :uid="uid" />
                     </div>
                 </div>
             </div>
@@ -96,7 +106,8 @@ const handleClose = () => {
     margin-bottom: 24px;
     padding: 6px 10px;
 }
-.Head_close__0vFMi{
+
+.Head_close__0vFMi {
     cursor: pointer;
 }
 </style>

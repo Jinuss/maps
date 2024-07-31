@@ -40,9 +40,12 @@ const changeCardVisible = (visible) => {
   showCard.value = visible
 }
 
-const callback = () => {
+const currentUUID = ref('')
+const callback = (uid) => {
   changeCardVisible(true)
-
+  if (uid) {
+    currentUUID.value = uid
+  }
 }
 onMounted(() => {
   const layers = { AMAP_LAYER, GOOGLE_LAYER, vectorLayer };
@@ -78,7 +81,7 @@ const getEventByCard = () => {
 <template>
   <div id="map">
     <trp @operateMap="operateMap" />
-    <card v-if="showCard" @getEventByCard="getEventByCard" />
+    <card v-if="showCard" @getEventByCard="getEventByCard" :uid="currentUUID" />
   </div>
 </template>
 <style scoped>
