@@ -4,19 +4,11 @@ import { storeToRefs } from 'pinia';
 import { useCardStore } from '../../store';
 import pointForm from './form/pointForm.vue';
 
-const props = defineProps({
-    uuid: String
-})
-
 const cardstore = useCardStore()
 const {setShowUuid}=cardstore
 const { showUuid } = storeToRefs(cardstore)
 
-const uuid = ref(props.uuid)
 
-watch(() => props.uuid, (newVal) => {
-    uuid.value = newVal
-})
 
 const form = reactive({ name: "" })
 
@@ -30,7 +22,7 @@ const handleDelete = () => {
 
 </script>
 <template>
-    <div class="card_panel" v-show="!!showUuid" :key="uuid">
+    <div class="card_panel" v-show="!!showUuid" :key="showUuid">
         <div class="card_header">
             <span>标点</span>
             <span role="img" tabindex="-1" class="anticon Head_close__0vFMi" @click="handleClose">
@@ -51,7 +43,7 @@ const handleDelete = () => {
                     </el-form>
                     <div class="styleSet">
                         <div class="styleSetTitle">样式设置</div>
-                        <pointForm :uuid="uuid" />
+                        <pointForm />
                     </div>
                     <div class="card_body_footer">
                         <el-button type="primary">保存</el-button>

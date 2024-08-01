@@ -1,16 +1,20 @@
 <script setup>
-import { reactive, watch, onMounted } from 'vue';
+import { reactive, watch, onMounted, computed } from 'vue';
+import { storeToRefs } from 'pinia';
 import { Style, Icon } from "ol/style";
 import Overlay from 'ol/Overlay'
+import { useCardStore, useMapStore } from '../../../store';
 import locImgSrc from "../../../assets/loc.png";
 import { getSVGForSrcById } from "../../../util/index.js";
 
-const props = defineProps({
-    uid: String
-})
+const cardstore = useCardStore()
+const { setItem, getItem: markerData } = cardstore
+const { showUuid, list } = storeToRefs(cardstore)
 
+const mapStore = useMapStore()
+const { mapTool } = storeToRefs(mapStore)
 const form = reactive({
-    uid: props.uid,
+    uuid: showUuid.value,
     color: "red",
     size: 25,
     symbolId: null,
@@ -18,18 +22,14 @@ const form = reactive({
     name: "point"
 })
 
-watch(() => props.uid, (newVal) => {
-    form.uid = newVal
-})
-
 const changeColor = (color) => {
-    document.querySelector(`#marker_${form.uid}`).style.borderColor = color
+    document.querySelector(`#marker_${form.uuid}`).style.borderColor = color
     changeMarkerIcon({ color })
 }
 
 const changeSize = (size) => {
     console.log("🚀 ~ changeSize ~ size:", size)
-    let { marker: targetMarker, overlay: targetOverlay } = markers[form.uid]
+    let { marker: targetMarker, overlay: targetOverlay } = markerData
     let rate = size / 25
     if (targetMarker) {
         var markerStyle = targetMarker.getStyle();
@@ -39,21 +39,23 @@ const changeSize = (size) => {
     }
 
     if (targetOverlay) {
-        map.removeOverlay(targetOverlay);
+        mapTool.value.map.removeOverlay(targetOverlay);
         let overlay = new Overlay({
             element: targetOverlay.getElement(),
             position: targetOverlay.getPosition(),
             offset: [15 * rate, -30 * rate]
         });
 
-        map.addOverlay(overlay);
-        markers[form.uid].overlay = overlay
+        mapTool.value.map.addOverlay(overlay);
+
+        setItem({overlay})
     }
 }
+
 const changeMarkerIcon = ({ symbolId, color }) => {
     symbolId = symbolId || form.symbolId;
     color = color || form.color
-    let { marker: targetMarker, } = markers[form.uid]
+    let { marker: targetMarker } = markerData
     if (targetMarker) {
         const originStyle = targetMarker.getStyle()
         var markerStyle = new Style({
@@ -84,6 +86,7 @@ onMounted(() => {
         })
     })
 })
+
 const handleClickDefault = (e) => {
     removeClass()
     document.querySelector("#defaultIcon").classList.add("active")
@@ -92,20 +95,21 @@ const handleClickDefault = (e) => {
     changeMarkerIcon({ symbolId })
 }
 
-const changeShowName=(visible)=>{
-    let {overlay: targetOverlay } = markers[form.uid] 
-    if(targetOverlay){
-       if(visible){
-         map.addOverlay(targetOverlay);
-       }else{
-         map.removeOverlay(targetOverlay);
-       }  
+const changeShowName = (visible) => {
+    let { overlay: targetOverlay } = markerData
+    if (targetOverlay) {
+        if (visible) {
+            mapTool.value.map.addOverlay(targetOverlay);
+        } else {
+            mapTool.value.map.removeOverlay(targetOverlay);
+        }
     }
 }
 
 </script>
+
 <template>
-    <el-form :model="form" label-width="auto" style="max-width: 600px" :class="form.uid">
+    <el-form :model="form" label-width="auto" style="max-width: 600px" :class="'card_' + form.uuid">
         <el-form-item label="符号集合:">
             <div class="icon_container">
                 <span @click="handleClickDefault" id="defaultIcon" class="active">
@@ -140,10 +144,11 @@ const changeShowName=(visible)=>{
             <el-input-number v-model="form.size" :step="1" :precision="0" :max="50" :min="16" @change="changeSize" />
         </el-form-item>
         <el-form-item label="显示名称:">
-            <el-switch v-model="form.showName" @change="changeShowName"/>
+            <el-switch v-model="form.showName" @change="changeShowName" />
         </el-form-item>
     </el-form>
 </template>
+
 <style scoped>
 .icon_container {
     border: 1px solid #d9d9d9;
