@@ -3,7 +3,7 @@ import { reactive, watch, onMounted } from 'vue';
 import { Style, Icon } from "ol/style";
 import Overlay from 'ol/Overlay'
 import locImgSrc from "../../../assets/loc.png";
-import { getSVGElementById } from "../../../util/index.js";
+import { getSVGForSrcById } from "../../../util/index.js";
 
 const props = defineProps({
     uid: String
@@ -11,8 +11,9 @@ const props = defineProps({
 
 const form = reactive({
     uid: props.uid,
-    color: "#409EFF",
+    color: "red",
     size: 25,
+    symbolId: null,
     showName: true,
     name: "point"
 })
@@ -23,7 +24,7 @@ watch(() => props.uid, (newVal) => {
 
 const changeColor = (color) => {
     document.querySelector(`#marker_${form.uid}`).style.borderColor = color
-    changeMarkerIcon(color)
+    changeMarkerIcon({ color })
 }
 
 const changeSize = (size) => {
@@ -49,14 +50,16 @@ const changeSize = (size) => {
         markers[form.uid].overlay = overlay
     }
 }
-const changeMarkerIcon = (color) => {
+const changeMarkerIcon = ({ symbolId, color }) => {
+    symbolId = symbolId || form.symbolId;
+    color = color || form.color
     let { marker: targetMarker, } = markers[form.uid]
     if (targetMarker) {
         const originStyle = targetMarker.getStyle()
         var markerStyle = new Style({
             image: new Icon({
                 anchor: [0.5, 1],
-                src: getSVGElementById(true, color),
+                src: getSVGForSrcById({ symbolId, color }),
                 scale: originStyle.getImage().getScale(),
             }),
         });
@@ -64,39 +67,70 @@ const changeMarkerIcon = (color) => {
     }
 }
 
+const removeClass = () => {
+    let aLi = document.querySelectorAll("span")
+    aLi.forEach((i) => { i.classList.remove("active") })
+}
 
 onMounted(() => {
-    const aSpan = document.querySelectorAll('.icon_container i');
-    aSpan.forEach(iSpan => {
-        iSpan.addEventListener('click', () => {
-            var backgroundImage = iSpan.getAttribute('data-image');
-            console.log('Clicked on:', backgroundImage);
-            changeMarkerIcon()
+    const aI = document.querySelectorAll('.icon_container i');
+    aI.forEach(oI => {
+        oI.addEventListener('click', () => {
+            removeClass()
+            oI.parentNode.classList.add("active")
+            const symbolId = oI.className
+            form.symbolId = symbolId
+            changeMarkerIcon({ symbolId })
         })
     })
 })
+const handleClickDefault = (e) => {
+    removeClass()
+    document.querySelector("#defaultIcon").classList.add("active")
+    const symbolId = "icon-symbol-one"
+    form.symbolId = symbolId
+    changeMarkerIcon({ symbolId })
+}
+
+const changeShowName=(visible)=>{
+    let {overlay: targetOverlay } = markers[form.uid] 
+    if(targetOverlay){
+       if(visible){
+         map.addOverlay(targetOverlay);
+       }else{
+         map.removeOverlay(targetOverlay);
+       }  
+    }
+}
+
 </script>
 <template>
     <el-form :model="form" label-width="auto" style="max-width: 600px" :class="form.uid">
         <el-form-item label="符号集合:">
             <div class="icon_container">
-                <span><i class="cy"></i><span>餐饮</span></span>
-                <span><i class="zs"></i><span>住宿</span></span>
-                <span><i class="gw"></i><span>购物</span></span>
-                <span><i class="sd"></i><span>4s店</span></span>
-                <span><i class="jr"></i><span>金融</span></span>
-                <span><i class="jy"></i><span>教育</span></span>
-                <span><i class="ws"></i><span>卫生</span></span>
-                <span><i class="xs"></i><span>休闲</span></span>
-                <span><i class="jg"></i><span>机关</span></span>
-                <span><i class="sy"></i><span>商业</span></span>
-                <span><i class="fw"></i><span>服务</span></span>
-                <span><i class="gs"></i><span>公司</span></span>
-                <span><i class="jt"></i><span>交通</span></span>
-                <span><i class="ky"></i><span>科研</span></span>
-                <span><i class="ny"></i><span>农业</span></span>
-                <span><i class="dm"></i><span>地名</span></span>
-                <span><i class="ss"></i><span>设施</span></span>
+                <span @click="handleClickDefault" id="defaultIcon" class="active">
+                    <svg width="26px" height="26px" fill="red" aria-hidden="true" focusable="false" class="">
+                        <use xlink:href="#icon-symbol-one"></use>
+                    </svg>
+                    <span>默认</span>
+                </span>
+                <span><i class="icon-restaurant"></i><span>餐饮</span></span>
+                <span><i class="icon-accommodation"></i><span>住宿</span></span>
+                <span><i class="icon-shopping"></i><span>购物</span></span>
+                <span><i class="icon-automobile"></i><span>4s店</span></span>
+                <span><i class="icon-finance"></i><span>金融</span></span>
+                <span><i class="icon-culture"></i><span>教育</span></span>
+                <span><i class="icon-hygiene"></i><span>卫生</span></span>
+                <span><i class="icon-sports"></i><span>休闲</span></span>
+                <span><i class="icon-office"></i><span>机关</span></span>
+                <span><i class="icon-storage"></i><span>商业</span></span>
+                <span><i class="icon-life"></i><span>服务</span></span>
+                <span><i class="icon-company"></i><span>公司</span></span>
+                <span><i class="icon-traffic"></i><span>交通</span></span>
+                <span><i class="icon-scientific-research"></i><span>科研</span></span>
+                <span><i class="icon-agriculture"></i><span>农业</span></span>
+                <span><i class="icon-place-name"></i><span>地名</span></span>
+                <span><i class="icon-facilities"></i><span>设施</span></span>
             </div>
         </el-form-item>
         <el-form-item label="符号颜色:">
@@ -106,7 +140,7 @@ onMounted(() => {
             <el-input-number v-model="form.size" :step="1" :precision="0" :max="50" :min="16" @change="changeSize" />
         </el-form-item>
         <el-form-item label="显示名称:">
-            <el-switch v-model="form.showName" />
+            <el-switch v-model="form.showName" @change="changeShowName"/>
         </el-form-item>
     </el-form>
 </template>
@@ -122,7 +156,6 @@ onMounted(() => {
 }
 
 .icon_container>span {
-    /* border: 1px solid #0000; */
     cursor: pointer;
     flex-direction: column;
     height: 70px;
@@ -134,6 +167,10 @@ onMounted(() => {
 }
 
 .icon_container>span:hover {
+    color: #149bf0;
+}
+
+.icon_container>span.active {
     color: #149bf0;
 }
 
@@ -149,71 +186,71 @@ onMounted(() => {
     margin-top: 5px
 }
 
-i.cy {
+i.icon-restaurant {
     background-position: -56px -28px;
 }
 
-i.zs {
+i.icon-accommodation {
     background-position: -1px -1px;
 }
 
-i.gw {
+i.icon-shopping {
     background-position: -222px -1px;
 }
 
-i.sd {
+i.icon-automobile {
     background-position: -194px -28px;
 }
 
-i.jr {
+i.icon-finance {
     background-position: -166px -1px;
 }
 
-i.jy {
+i.icon-culture {
     background-position: -111px -1px;
 }
 
-i.ws {
+i.icon-hygiene {
     background-position: -29px -1px;
 }
 
-i.xs {
+i.icon-sports {
     background-position: -56px -1px;
 }
 
-i.jg {
+i.icon-office {
     background-position: -194px -1px;
 }
 
-i.sy {
+i.icon-storage {
     background-position: -84px -28px;
 }
 
-i.fw {
+i.icon-life {
     background-position: -84px -1px;
 }
 
-i.gs {
+i.icon-company {
     background-position: -1px -28px;
 }
 
-i.jt {
+i.icon-traffic {
     background-position: -139px -1px;
 }
 
-i.ky {
+i.icon-scientific-research {
     background-position: -29px -28px;
 }
 
-i.ny {
+i.icon-agriculture {
     background-position: -111px -28px;
 }
 
-i.dm {
+i.icon-place-name {
     background-position: -166px -28px;
 }
 
-i.ss {
+i.icon-facilities {
     background-position: -139px -28px;
 }
 </style>

@@ -4,7 +4,7 @@ import * as olStyle from "ol/style";
 import { Point } from "ol/geom";
 import Overlay from "ol/Overlay";
 import { v4 as uuidv4 } from "uuid";
-import { EventBus, getSVGElementById } from "../../util/index.js";
+import { EventBus, getSVGForSrcById } from "../../util/index.js";
 
 // 创建 overlay 内容的函数
 function createOverlayElement(content: string, uid: string) {
@@ -64,7 +64,7 @@ export class MapTools {
     var markerStyle = new olStyle.Style({
       image: new olStyle.Icon({
         anchor: [0.5, 1], 
-        src: getSVGElementById(),
+        src: getSVGForSrcById({}),
         scale: 1,
       }),
     });
