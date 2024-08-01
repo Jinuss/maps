@@ -14,6 +14,9 @@ import card from "./card.vue";
 import "ol/ol.css";
 import "./style.css";
 import { MapTools } from './utools.tsx'
+import { useMapStore } from "../../store";
+
+const MapStore = useMapStore()
 function getTileLayer(url, visible) {
   return new TileLayer({
     source: new XYZ({
@@ -34,19 +37,6 @@ const emit = defineEmits(["setMap"]);
 
 let MapTool = null;
 
-const showCard = ref(false)
-
-const changeCardVisible = (visible) => {
-  showCard.value = visible
-}
-
-const currentUUID = ref('')
-const callback = (uid) => {
-  changeCardVisible(true)
-  if (uid) {
-    currentUUID.value = uid
-  }
-}
 onMounted(() => {
   const layers = { AMAP_LAYER, GOOGLE_LAYER, vectorLayer };
   const map = new Map({
@@ -62,26 +52,17 @@ onMounted(() => {
 
   map.addControl(new FullScreen());
   map.addControl(new ScaleLine());
-  MapTool = new MapTools(map, layers, 'draw', callback)
+  MapTool = new MapTools(map, layers, 'draw')
+  MapStore.setMap(MapTool)
   emit("setMap", map, layers);
   GOOGLE_LAYER.setVisible(false);
 });
 
-const operateMap = (type) => {
-  console.log("🚀 ~ operateMap ~ type:", type)
-  MapTool.removeListener()
-  MapTool.addListener(type)
-}
-
-const getEventByCard = () => {
-  changeCardVisible(false)
-}
-
 </script>
 <template>
   <div id="map">
-    <trp @operateMap="operateMap" />
-    <card v-if="showCard" @getEventByCard="getEventByCard" :uid="currentUUID" />
+    <trp />
+    <card />
   </div>
 </template>
 <style scoped>

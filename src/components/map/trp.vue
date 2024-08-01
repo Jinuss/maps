@@ -1,7 +1,11 @@
 <script setup>
 import { ref, onMounted, onBeforeUnmount } from "vue";
+import { storeToRefs } from 'pinia';
+import { useMapStore, useCardStore } from "../../store";
 import { EventBus } from '../../util/index'
 
+const { mapTool: MapTool } = storeToRefs(useMapStore())
+const cardStore = useCardStore()
 const currentColor = ref("#262626")
 const ulRef = ref()
 
@@ -10,9 +14,6 @@ const removeClass = () => {
     aLi.forEach((i) => { i.classList.remove("active") })
 }
 
-const emit = defineEmits(["operateMap"])
-
-
 onMounted(() => {
     if (ulRef && ulRef.value) {
         ulRef.value.childNodes.forEach(item => {
@@ -20,14 +21,28 @@ onMounted(() => {
                 removeClass()
                 let type = item.className
                 item.classList.add('active')
-                emit("operateMap", type)
+                handleClickType(type)
             })
         })
     }
     EventBus.on('cancel', removeClass)
 })
 
-onBeforeUnmount(()=>{
+const handleCompleteCallback = ({ operate, type, uuid, ...rest }) => {
+    if (operate=="add") {
+        cardStore.addData({ type, uuid, ...rest });
+    }else{
+        cardStore.setShowUuid(uuid)
+    }
+}
+const handleClickType = (type) => {
+    if (MapTool.value) {
+        MapTool.value.callback = handleCompleteCallback
+        MapTool.value.removeListener()
+        MapTool.value.addListener(type)
+    }
+}
+onBeforeUnmount(() => {
     EventBus.off('cancel', removeClass)
 })
 

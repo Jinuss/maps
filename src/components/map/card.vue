@@ -1,27 +1,36 @@
 <script setup>
-import { ref, reactive, watch } from 'vue';
+import { ref, reactive, watch, computed } from 'vue';
+import { storeToRefs } from 'pinia';
+import { useCardStore } from '../../store';
 import pointForm from './form/pointForm.vue';
 
 const props = defineProps({
-    uid: String
+    uuid: String
 })
 
-const uid = ref(props.uid)
+const cardstore = useCardStore()
+const {setShowUuid}=cardstore
+const { showUuid } = storeToRefs(cardstore)
 
-watch(() => props.uid, (newVal) => {
-    uid.value = newVal
+const uuid = ref(props.uuid)
+
+watch(() => props.uuid, (newVal) => {
+    uuid.value = newVal
 })
 
 const form = reactive({ name: "" })
 
-const emit = defineEmits(['getEventByCard'])
-
 const handleClose = () => {
-    emit('getEventByCard')
+    setShowUuid('')
 }
+
+const handleDelete = () => {
+    handleDelete('')
+}
+
 </script>
 <template>
-    <div class="card_panel" :key="uid">
+    <div class="card_panel" v-show="!!showUuid" :key="uuid">
         <div class="card_header">
             <span>标点</span>
             <span role="img" tabindex="-1" class="anticon Head_close__0vFMi" @click="handleClose">
@@ -42,7 +51,11 @@ const handleClose = () => {
                     </el-form>
                     <div class="styleSet">
                         <div class="styleSetTitle">样式设置</div>
-                        <pointForm :uid="uid" />
+                        <pointForm :uuid="uuid" />
+                    </div>
+                    <div class="card_body_footer">
+                        <el-button type="primary">保存</el-button>
+                        <el-button @click="handleDelete">删除</el-button>
                     </div>
                 </div>
             </div>
@@ -81,6 +94,12 @@ const handleClose = () => {
     height: auto;
     min-height: 200px;
     max-height: calc(-190px + 100vh);
+}
+
+.card_body_footer {
+    display: flex;
+    justify-content: center;
+    padding: 0 10px 20px;
 }
 
 .container {
