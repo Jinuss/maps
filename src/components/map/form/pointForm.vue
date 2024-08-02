@@ -8,7 +8,7 @@ import locImgSrc from "../../../assets/loc.png";
 import { getSVGForSrcById } from "../../../util/index.js";
 
 const cardstore = useCardStore()
-const { setItem, getItem: markerData } = cardstore
+const { setItem, getItem: getMarkerData } = cardstore
 const { showUuid, list } = storeToRefs(cardstore)
 
 const mapStore = useMapStore()
@@ -29,7 +29,7 @@ const changeColor = (color) => {
 
 const changeSize = (size) => {
     console.log("🚀 ~ changeSize ~ size:", size)
-    let { marker: targetMarker, overlay: targetOverlay } = markerData
+    let { marker: targetMarker, overlay: targetOverlay } = getMarkerData()
     let rate = size / 25
     if (targetMarker) {
         var markerStyle = targetMarker.getStyle();
@@ -48,14 +48,14 @@ const changeSize = (size) => {
 
         mapTool.value.map.addOverlay(overlay);
 
-        setItem({overlay})
+        setItem({ overlay })
     }
 }
 
 const changeMarkerIcon = ({ symbolId, color }) => {
     symbolId = symbolId || form.symbolId;
     color = color || form.color
-    let { marker: targetMarker } = markerData
+    let { marker: targetMarker } = getMarkerData()
     if (targetMarker) {
         const originStyle = targetMarker.getStyle()
         var markerStyle = new Style({
@@ -96,7 +96,7 @@ const handleClickDefault = (e) => {
 }
 
 const changeShowName = (visible) => {
-    let { overlay: targetOverlay } = markerData
+    let { overlay: targetOverlay } = getMarkerData()
     if (targetOverlay) {
         if (visible) {
             mapTool.value.map.addOverlay(targetOverlay);

@@ -1,14 +1,14 @@
 <script setup>
 import { ref, reactive, watch, computed } from 'vue';
 import { storeToRefs } from 'pinia';
-import { useCardStore } from '../../store';
+import { useCardStore, useMapStore } from '../../store';
 import pointForm from './form/pointForm.vue';
 
 const cardstore = useCardStore()
-const {setShowUuid}=cardstore
+const { setShowUuid, getItem, removeItem } = cardstore
 const { showUuid } = storeToRefs(cardstore)
 
-
+const MapStore = useMapStore()
 
 const form = reactive({ name: "" })
 
@@ -17,7 +17,11 @@ const handleClose = () => {
 }
 
 const handleDelete = () => {
-    handleDelete('')
+    let { marker: targetMarker, overlay: targetOverlay } = getItem()
+    MapStore.mapTool.map.removeOverlay(targetOverlay);
+    MapStore.mapTool.layers.vectorLayer.getSource().removeFeature(targetMarker)
+    removeItem({ uuid: showUuid.value })
+    setShowUuid('')
 }
 
 </script>

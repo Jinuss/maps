@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/openlayers/8.2.0/ol.min.css"
+        integrity="sha512-bc9nJM5uKHN+wK7rtqMnzlGicwJBWR11SIDFJlYBe5fVOwjHGtXX8KMyYZ4sMgSL0CoUjo4GYgIBucOtqX/RUQ=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <title>距离测量</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html,
+        body,
+        #app {
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .app-map {
+            width: 90vw;
+            height: 90vh;
+            margin: 5vh 5vw;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .app-btns {
+            position: fixed;
+            right: 10px;
+            top: 10px;
+            background-color: #fff;
+            box-shadow: 0 2px 12px 0 rgba(0, 0, 0, .5);
+            width: 210px;
+            padding: 25px;
+            text-align: center;
+            border-radius: 5px;
+            display: flex;
+            flex-direction: column;
+            z-index: 2;
+        }
+
+        .app-btns button {
+            font-size: 18px;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 4px;
+            color: #fff;
+            background-color: #409eff;
+            border-color: none;
+            cursor: pointer;
+            border: 1px solid #dcdfe6;
+            margin-bottom: 5px;
+        }
+
+        .app-btns button:hover {
+            background: #66b1ff;
+        }
+
+        .app-btns button.end,
+        .app-btns button.end:hover {
+            background-color: #ff0000;
+        }
+
+        #helpTxt,
+        .ol-tooltip {
+            position: relative;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 4px;
+            color: white;
+            padding: 4px 8px;
+            opacity: 0.7;
+            white-space: nowrap;
+            font-size: 12px;
+            cursor: default;
+            user-select: none;
+        }
+
+        .ol-tooltip-measure {
+            opacity: 1;
+            font-weight: bold;
+        }
+
+        .ol-tooltip-static {
+            background-color: #20ba11;
+            color: #fff;
+            opacity: 1;
+            border: 1px solid white;
+        }
+
+        .ol-tooltip-measure:before,
+        .ol-tooltip-static:before {
+            border-top: 6px solid rgba(0, 0, 0, 0.5);
+            border-right: 6px solid transparent;
+            border-left: 6px solid transparent;
+            content: "";
+            position: absolute;
+            bottom: -6px;
+            margin-left: -7px;
+            left: 50%;
+        }
+
+        .ol-tooltip-static:before {
+            border-top-color: #20ba11;
+        }
+
+        [v-cloak] {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app" v-cloak>
+        <div class="app-map" id="app-map"></div>
+        <div class="app-btns">
+            <button type='button' :class="{end: calcIng}" @click='handleClickCalcDistance'>{{calcIng ? '结束测量' :
+                '开始测量'}}</button>
+        </div>
+        <div id="helpTxt">{{helpMsg}}</div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/openlayers/8.2.0/dist/ol.min.js"
+        integrity="sha512-+nvfloZUX7awRy1yslYBsicmHKh/qFW5w79+AiGiNcbewg0nBy7AS4G3+aK/Rm+eGPOKlO3tLuVphMxFXeKeOQ=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/3.4.14/vue.global.prod.min.js"
+        integrity="sha512-huEQFMCpBzGkSDSPVAeQFMfvWuQJWs09DslYxQ1xHeaCGQlBiky9KKZuXX7zfb0ytmgvfpTIKKAmlCZT94TAlQ=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script>
+        const { createApp } = Vue;
+        // 绘制过程中的折线样式
+        const style1 = new ol.style.Style({
+            stroke: new ol.style.Stroke({
+                color: 'rgba(32, 177, 170, 0.5)',
+                width: 3
+            })
+        });
+        // 绘制结束后的折线样式
+        const style2 = new ol.style.Style({
+            stroke: new ol.style.Stroke({
+                color: 'rgba(32, 177, 170, 1)',
+                width: 3
+            })
+        });
+        // 计算折线长度的函数
+        const formatLength = function (line) {
+            const length = ol.sphere.getLength(line);
+            let output;
+            if (length > 100) {
+                output = Math.round((length / 1000) * 100) / 100 + ' ' + 'km';
+            } else {
+                output = Math.round(length * 100) / 100 + ' ' + 'm';
+            }
+            return output;
+        };
+        // 格式化距离
+        function formatDistance(dis) {
+            if (dis > 100) {
+                return Math.round((dis / 1000) * 100) / 100 + ' ' + 'km';
+            } else {
+                return Math.round(dis * 100) / 100 + ' ' + 'm';
+            }
+        };
+        const vm = createApp({
+            data() {
+                return {
+                    map: {}, // 地图实例
+                    drawSource: {}, // 绘制图形的图层资源
+                    draw: null, // 绘制实例
+                    calcIng: false, // 测量中标识
+                    helpMsg: '', // 提示文本
+                    measureTooltip: null, // 每段折线用于实时和最后显示总长的overlay
+                    sketch: null // 绘制过程中的折线
+                }
+            },
+            methods: {
+                // 初始化地图
+                initMap() {
+                    // 创建放置用户绘制的feature的图层
+                    this.drawSource = new ol.source.Vector();
+                    const layer = new ol.layer.Vector({
+                        source: this.drawSource
+                    });
+                    // 高德地图瓦片地址
+                    const mianLayer = new ol.layer.Tile({
+                        source: new ol.source.XYZ({
+                            url: 'http://wprd04.is.autonavi.com/appmaptile?lang=zh_cn&size=1&style=7&x={x}&y={y}&z={z}'
+                        })
+                    });
+                    //  初始化地图
+                    this.map = new ol.Map({
+                        target: 'app-map',
+                        layers: [mianLayer, layer],
+                        view: new ol.View({
+                            projection: 'EPSG:3857',
+                            //设定中心点，因为默认坐标系为 3587，所以要将我们常用的经纬度坐标系4326 转换为 3587坐标系
+                            center: ol.proj.transform([111.8453154, 32.7383500], 'EPSG:4326', 'EPSG:3857'),
+                            zoom: 12
+                        })
+                    });
+                    // 初始化绑定事件
+                    this.bindEvt();
+                    // 初始化提示文本的overlay
+                    this.initHelpOverlay();
+                },
+                // 初始化绑定事件
+                bindEvt() {
+                    // 鼠标离开地图范围，隐藏提示信息
+                    this.map.getViewport().addEventListener('mouseleave', () => {
+                        this.helpTooltip.getElement().style.display = 'none';
+                    });
+                    // 鼠标进入地图范围，如果正在测量距离，显示提示信息
+                    this.map.getViewport().addEventListener('mouseenter', () => {
+                        if (this.calcIng) {
+                            this.helpTooltip.getElement().style.display = 'block';
+                        }
+                    });
+                    // 鼠标移动，动态设置提示信息的位置
+                    this.map.on('pointermove', (evt) => {
+                        // 在拖拽过程中或者未开启测量，不处理
+                        if (evt.dragging || this.calcIng === false) {
+                            return;
+                        }
+                        // 绘制第一个点前的提示信息
+                        this.helpMsg = '点击鼠标左键，确定起始点位';
+                        if (this.sketch) {
+                            // 确定了第一个点之后的提示信息
+                            this.helpMsg = '移动鼠标，点击左键确定下一点位，鼠标右键结束测量';
+                        }
+                        // 设置提示信息的位置
+                        this.helpTooltip.setPosition(evt.coordinate);
+                    });
+                },
+                // 初始化提示文本的overlay
+                initHelpOverlay() {
+                    this.helpTooltip = new ol.Overlay({
+                        element: document.querySelector('#helpTxt'),
+                        offset: [15, 0],
+                        positioning: 'center-left'
+                    });
+                    this.map.addOverlay(this.helpTooltip);
+                },
+                // 点击开始测量
+                handleClickCalcDistance() {
+                    if (this.calcIng) {
+                        // 结束测量
+                        this.calcIng = false;
+                        this.map.removeInteraction(this.draw);
+                        this.helpTooltip.getElement().style.display = 'none';
+                    } else {
+                        // 开始测量，初始化交互
+                        this.calcIng = true;
+                        this.initInteraction();
+                    }
+                },
+                // 创建显示距离的信息，每开始一个折线，就需要一个显示距离的overlay
+                createMeasureTooltip() {
+                    const measureTooltipElement = document.createElement('div');
+                    measureTooltipElement.className = 'ol-tooltip ol-tooltip-measure';
+                    this.measureTooltip = new ol.Overlay({
+                        element: measureTooltipElement,
+                        offset: [0, -15],
+                        positioning: 'bottom-center',
+                        stopEvent: false,
+                        // insertFirst属性控制Overlay是否应该被插入到地图元素列表的开头
+                        insertFirst: false
+                    });
+                    this.map.addOverlay(this.measureTooltip);
+                },
+                // 向折线线段上添加距离overlay
+                putOverlayToLine(coordinate, text) {
+                    const div = document.createElement('div');
+                    div.className = 'ol-tooltip ol-tooltip-measure';
+                    div.innerHTML = text;
+                    // 创建Overlay
+                    const overlay = new ol.Overlay({
+                        element: div,
+                        offset: [0, -15],
+                        positioning: 'bottom-center',
+                        stopEvent: false
+                    });
+                    this.map.addOverlay(overlay); // 将Overlay添加到地图
+                    overlay.setPosition(coordinate); // 设置Overlay的位置
+                },
+                // 初始化绘制直线，开始测量
+                initInteraction() {
+                    // 创建绘制折线的交互控件
+                    this.draw = new ol.interaction.Draw({
+                        source: this.drawSource,
+                        type: 'LineString',
+                        style: style1
+                    });
+                    // 将交互添加到地图
+                    this.map.addInteraction(this.draw);
+                    let listener; // 监听geomerty的change事件，开始时候绑定，结束时候解绑
+                    this.draw.on('drawstart', (evt) => {
+                        let lines = {}; // 每段折线的线集合
+                        this.createMeasureTooltip(); // 创建一个overlay，用于实时显示距离，测量结束后停留在折线末端
+                        this.helpTooltip.getElement().style.display = 'block'; // 展示提示信息
+                        this.sketch = evt.feature;
+                        let tooltipCoord = evt.coordinate;
+                        // 绑定Geometry发生变化事件，实时显示距离和设置位置
+                        listener = this.sketch.getGeometry().on('change', (evt) => {
+                            // 展示总距离
+                            const geom = evt.target;
+                            let output = formatLength(geom); // 计算距离
+                            tooltipCoord = geom.getLastCoordinate(); // 折线的最后一个点的坐标
+                            this.measureTooltip.getElement().innerHTML = '总长' + output; // 显示计算后的距离
+                            this.measureTooltip.setPosition(tooltipCoord); // 设置overlay位置显示在折线的末端
+                            // 展示分段距离
+                            const coordinates = geom.getCoordinates().slice(0, -1);
+                            // 获取折线的每段线段 给除了最后一段线段增加距离显示
+                            for (let i = 0; i < coordinates.length; i++) {
+                                const start = coordinates[i]; // 折线起点
+                                const end = coordinates[i + 1]; // 折线终点
+                                if (!end) {
+                                    continue;
+                                }
+                                // 使用开始可结束的经纬度组成唯一标识
+                                const key = 'l_' + start.join('_').replace(/[.]/g, '') + '-' + end.join('_').replace(/[.]/g, '');
+                                if (!lines[key] && tooltipCoord.join('') != end.join('')) {
+                                    lines[key] = 1;
+                                    const start4326 = ol.proj.transform(start, 'EPSG:3857', 'EPSG:4326');
+                                    const end4326 = ol.proj.transform(end, 'EPSG:3857', 'EPSG:4326')
+                                    const distance = ol.sphere.getDistance(start4326, end4326); // 计算距离
+                                    this.putOverlayToLine(end, formatDistance(distance)); // 添加overlay显示折线距离
+                                }
+                            }
+                        });
+                    });
+                    this.draw.on('drawend', (evt) => {
+                        // 显示距离的div设置类名
+                        this.measureTooltip.getElement().className = 'ol-tooltip ol-tooltip-static';
+                        this.measureTooltip.setOffset([0, -7]);
+                        evt.feature.setStyle(style2); // 设置折线样式
+                        ol.Observable.unByKey(listener); // 解绑change事件
+                        this.sketch = null;
+                        this.measureTooltip = null;
+                    });
+                }
+            },
+            mounted() {
+                this.initMap();
+            }
+        }).mount('#app')
+    </script>
+</body>
+
+</html>
