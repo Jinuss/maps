@@ -29,9 +29,9 @@ onMounted(() => {
 })
 
 const handleCompleteCallback = ({ operate, type, uuid, ...rest }) => {
-    if (operate=="add") {
+    if (operate == "add") {
         cardStore.addData({ type, uuid, ...rest });
-    }else{
+    } else {
         cardStore.setShowUuid(uuid)
     }
 }

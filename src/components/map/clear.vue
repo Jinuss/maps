@@ -1,14 +1,21 @@
 <script setup>
+import { useMapStore, useCardStore } from "../../store";
+
+const mapStore = useMapStore()
+
+const handleClear = () => {
+    mapStore.mapTool.addListener("clear")
+}
 </script>
 <template>
     <ul class="Clear_clear__Zy0p7">
-        <li>
+        <li @click="handleClear">
             <span role="img" class="anticon">
                 <svg width="1em" height="1em" fill="currentColor" aria-hidden="true" focusable="false" class="">
                     <use xlink:href="#icon-delete"></use>
-                </svg></span>
+                </svg>
+            </span>
         </li>
-
     </ul>
 </template>
 <style scoped>
