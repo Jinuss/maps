@@ -36,14 +36,17 @@ export class MapTools {
   mapEl = document.querySelector(".ol-viewport");
   uuid: string = "";
 
-  constructor(
-    map: any,
-    layers: any,
-    type: string,
-    callback: Function = () => {}
-  ) {
+  constructor(map: any, layers: any, callback: Function = () => {}) {
     this.map = map;
     this.layers = layers;
+    const coordinateEl = document.querySelector(".brp");
+    this.map.on("pointermove", (evt) => {
+      var lonLat = transform(evt.coordinate, "EPSG:3857", "EPSG:4326");
+      if (lonLat&&lonLat.length) {
+        coordinateEl.innerHTML = `经度: ${lonLat[0].toFixed(3)}, 纬度: ${lonLat[1].toFixed(3)}`;
+        coordinateEl.style.display='block'
+      }
+    });
     this.handle = (event: { coordinate: any }) => {
       const coord = event.coordinate;
       const marker = this.addMarker(coord);

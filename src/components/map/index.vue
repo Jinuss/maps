@@ -12,6 +12,7 @@ import { AMAP_URL, GOOGLE_URL } from "../map/layer.js";
 import trp from "./trp.vue";
 import card from "./card.vue";
 import clear from './clear.vue';
+import brp from './brp.vue'
 import "ol/ol.css";
 import "./style.css";
 import { MapTools } from './utools.tsx'
@@ -65,6 +66,7 @@ onMounted(() => {
     <trp />
     <clear />
     <card />
+    <brp />
   </div>
 </template>
 <style scoped>
