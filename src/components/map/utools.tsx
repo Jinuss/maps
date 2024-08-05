@@ -5,6 +5,7 @@ import * as olStyle from "ol/style";
 import { Point } from "ol/geom";
 import Overlay from "ol/Overlay";
 import { Draw } from "ol/interaction";
+// import { createRegularPolygon } from "ol/interaction/Draw";
 import { getDistance } from "ol/sphere";
 import { transform } from "ol/proj";
 import { v4 as uuidv4 } from "uuid";
@@ -75,6 +76,9 @@ export class MapTools {
       case "point":
         that.map.on("click", that.handle);
         break;
+      case "rect":
+        that.initInteractionReact();
+        break;
       case "measure-distance":
         that.initInteraction();
         break;
@@ -138,6 +142,14 @@ export class MapTools {
 
   draw: Draw | undefined;
   listener: Function = () => {};
+  initInteractionReact() {
+    this.draw = new Draw({
+      source: this.layers.vectorLayer.getSource(),
+      type: "Circle",
+      style: this.style2,
+      // geometryFunction: createRegularPolygon(40),
+    });
+  }
   formatPonit(coordinate: Coordinate) {
     const point = new Point(coordinate);
     const pointFeature = new Feature({
@@ -188,10 +200,6 @@ export class MapTools {
     this.createMeasureTooltip();
     this.sketch = evt.feature;
     let tooltipCoord = evt.coordinate;
-    console.log(
-      "🚀 ~ MapTools ~ handleMeasureLineStart ~ tooltipCoord:",
-      tooltipCoord
-    );
     this.listener = this.sketch.getGeometry().on("change", (evt) => {
       const geom = evt.target;
       // let measureLine = {};
@@ -276,24 +284,13 @@ export class MapTools {
         this.sketch = evt.feature;
         this.listener = this.sketch.getGeometry().on("change", (evt) => {
           const geom = evt.target;
-          console.log(
-            "🚀 ~ MapTools ~ this.listener=this.sketch.getGeometry ~ geom:",
-            geom
-          );
           let output = getArea(geom, false);
           const coordinates = geom.getCoordinates()[0];
-          console.log(
-            "🚀 ~ MapTools ~ this.listener=this.sketch.getGeometry ~ coordinates:",
-            coordinates
-          );
-          if (output) {
-            let tooltipCoord = coordinates[coordinates.length - 2]; // 折线的最后一个点的坐标
+          if (output > 0) {
+            let tooltipCoord = coordinates[coordinates.length - 2];
             this.measureTooltip.getElement().innerHTML =
-              "总面积" + getArea(geom); // 显示计算后的距离
-            this.measureTooltip.setPosition(tooltipCoord); // 设置overlay位置显示在折线的末端
-            // for (let index = 0; index < coordinates.length; index++) {
-            //   this.formatPonit(coordinates[index]);
-            // }
+              "总面积" + getArea(geom);
+            this.measureTooltip.setPosition(tooltipCoord);
           }
         });
       }
