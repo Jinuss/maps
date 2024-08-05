@@ -1,11 +1,15 @@
 export const TYPES = {
-  POINT: "point",
+  POINT: "Point",
   LINESTRING: "LineString",
   POLYGON: "Polygon",
+  CIRCLE: "Circle",
+  RECT: "Rect",
 };
 
 export const CARD_TITLE = {
-  point: "标点",
+  Point: "标点",
   LineString: "标线",
   Polygon: "标面",
+  Circle: "画圆",
+  Rect: "画矩形",
 };

@@ -3,6 +3,7 @@ import { ref, onMounted, onBeforeUnmount } from "vue";
 import { storeToRefs } from 'pinia';
 import { useMapStore, useCardStore } from "../../store";
 import { EventBus } from '../../util/index'
+import { TYPES } from "../../const/const.map";
 
 const { mapTool: MapTool } = storeToRefs(useMapStore())
 const cardStore = useCardStore()
@@ -49,7 +50,7 @@ onBeforeUnmount(() => {
 </script>
 <template>
     <ul class="Draw_draw__UPVhb" ref="ulRef">
-        <li class="point">
+        <li :class="TYPES.POINT">
             <el-tooltip class="box-item" effect="dark" content="标点" placement="left" :offset="20">
                 <span role="img" class="anticon">
                     <svg width="1em" height="1em" :fill="currentColor" aria-hidden="true" focusable="false" class="">
@@ -58,7 +59,7 @@ onBeforeUnmount(() => {
                 </span>
             </el-tooltip>
         </li>
-        <li class="LineString">
+        <li :class="TYPES.LINESTRING">
             <el-tooltip class="box-item" effect="dark" content="标线" placement="left" :offset="20">
                 <span role="img" class="anticon">
                     <svg width="1em" height="1em" :fill="currentColor" aria-hidden="true" focusable="false" class="">
@@ -66,7 +67,7 @@ onBeforeUnmount(() => {
                     </svg></span>
             </el-tooltip>
         </li>
-        <li class="Polygon">
+        <li :class="TYPES.POLYGON">
             <el-tooltip class="box-item" effect="dark" content="标面" placement="left" :offset="20">
                 <span role="img" class="anticon"><svg width="1em" height="1em" :fill="currentColor" aria-hidden="true"
                         focusable="false" class="">
@@ -74,7 +75,7 @@ onBeforeUnmount(() => {
                     </svg></span>
             </el-tooltip>
         </li>
-        <li class="circle">
+        <li :class="TYPES.CIRCLE">
             <el-tooltip class="box-item" effect="dark" content="画圆" placement="left" :offset="20">
                 <span role="img" class="anticon"><svg width="1em" height="1em" :fill="currentColor" aria-hidden="true"
                         focusable="false" class="">
@@ -82,7 +83,7 @@ onBeforeUnmount(() => {
                     </svg></span>
             </el-tooltip>
         </li>
-        <li class="rect">
+        <li :class="TYPES.RECT">
             <el-tooltip class="box-item" effect="dark" content="画矩形" placement="left" :offset="20">
                 <span role="img" class="anticon"><svg width="1em" height="1em" :fill="currentColor" aria-hidden="true"
                         focusable="false" class="">

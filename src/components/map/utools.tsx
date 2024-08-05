@@ -17,6 +17,7 @@ import {
   formatDistance,
   getArea,
 } from "../../util";
+import { TYPES } from "../../const/const.map";
 
 // 创建 overlay 内容的函数
 function createOverlayElement(content: string, uuid: string) {
@@ -78,13 +79,13 @@ export class MapTools {
     that.mapEl?.classList.add("draw");
     // 创建一个点击事件监听器
     switch (type) {
-      case "point":
+      case TYPES.POINT:
         that.map.on("click", that.handle);
         break;
-      case "LineString":
-      case "Polygon":
-      case "circle":
-      case "rect":
+      case TYPES.LINESTRING:
+      case TYPES.POLYGON:
+      case TYPES.CIRCLE:
+      case TYPES.RECT:
         that.initInteractionBase(type);
         break;
       case "measure-distance":
@@ -160,13 +161,13 @@ export class MapTools {
   draw: Draw | undefined;
   listener: Function = () => {};
   initInteractionBase(type) {
-    if (["circle", "rect"].includes(type)) {
+    if ([TYPES.CIRCLE, TYPES.RECT].includes(type)) {
       this.draw = new Draw({
         source: this.layers.vectorLayer.getSource(),
         type: "Circle",
         style: this.style2,
         geometryFunction:
-          type == "circle" ? createRegularPolygon(40) : createBox(),
+          type === TYPES.CIRCLE ? createRegularPolygon(40) : createBox(),
       });
     } else {
       this.draw = new Draw({

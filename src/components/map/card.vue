@@ -6,7 +6,8 @@ import { CARD_TITLE } from '../../const/const.map'
 import pointForm from './form/pointForm.vue';
 import lineForm from './form/lineForm.vue';
 import polygonForm from './form/polygonForm.vue';
-import circleForm from './form/circleForm.vue'
+import circleForm from './form/circleForm.vue';
+import { TYPES } from '../../const/const.map';
 
 const cardstore = useCardStore()
 const { setShowUuid, getItem, removeItem } = cardstore
@@ -19,7 +20,6 @@ let form = ref({ name: "", type: "" })
 cardstore.$onAction(({ name, store, after }) => {
     if (name == "addData") {
         after((p) => {
-            console.log("🚀 ~ after ~ p:", p)
             form.value = { ...form.value, ...p }
         })
     }
@@ -39,16 +39,18 @@ const handleDelete = () => {
 const formComponent = computed(() => {
     const { type } = form.value
     switch (type) {
-        case 'point': return pointForm;
-        case 'LineString': return lineForm;
-        case 'Polygon': return polygonForm;
-        case 'circle': return circleForm;
+        case TYPES.POINT: return pointForm;
+        case TYPES.LINESTRING: return lineForm;
+        case TYPES.POLYGON:
+        case TYPES.RECT: return polygonForm;
+        case TYPES.CIRCLE: return circleForm;
         default:
             return null;
     }
 })
 
 </script>
+
 <template>
     <div class="card_panel" v-show="!!showUuid" :key="showUuid">
         <div class="card_header">
@@ -82,6 +84,7 @@ const formComponent = computed(() => {
         </div>
     </div>
 </template>
+
 <style scoped>
 .card_panel {
     background: #fff;
