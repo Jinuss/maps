@@ -13,6 +13,7 @@ export const useCardStore = defineStore("cardStore", {
     addData(data: Object) {
       this.list.push({ ...defaultState, ...data });
       this.showUuid = data.uuid;
+      return data
     },
     setShowUuid(uuid: string) {
       this.showUuid = uuid;

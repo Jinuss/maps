@@ -2,7 +2,11 @@
 import { ref, reactive, watch, computed } from 'vue';
 import { storeToRefs } from 'pinia';
 import { useCardStore, useMapStore } from '../../store';
+import { CARD_TITLE } from '../../const/const.map'
 import pointForm from './form/pointForm.vue';
+import lineForm from './form/lineForm.vue';
+import polygonForm from './form/polygonForm.vue';
+import circleForm from './form/circleForm.vue'
 
 const cardstore = useCardStore()
 const { setShowUuid, getItem, removeItem } = cardstore
@@ -10,8 +14,16 @@ const { showUuid } = storeToRefs(cardstore)
 
 const MapStore = useMapStore()
 
-const form = reactive({ name: "" })
+let form = ref({ name: "", type: "" })
 
+cardstore.$onAction(({ name, store, after }) => {
+    if (name == "addData") {
+        after((p) => {
+            console.log("🚀 ~ after ~ p:", p)
+            form.value = { ...form.value, ...p }
+        })
+    }
+})
 const handleClose = () => {
     setShowUuid('')
 }
@@ -24,11 +36,23 @@ const handleDelete = () => {
     setShowUuid('')
 }
 
+const formComponent = computed(() => {
+    const { type } = form.value
+    switch (type) {
+        case 'point': return pointForm;
+        case 'LineString': return lineForm;
+        case 'Polygon': return polygonForm;
+        case 'circle': return circleForm;
+        default:
+            return null;
+    }
+})
+
 </script>
 <template>
     <div class="card_panel" v-show="!!showUuid" :key="showUuid">
         <div class="card_header">
-            <span>标点</span>
+            <span>{{ CARD_TITLE[form.type] }}</span>
             <span role="img" tabindex="-1" class="anticon Head_close__0vFMi" @click="handleClose">
                 <svg width="1em" height="1em" fill="currentColor" aria-hidden="true" focusable="false" class="">
                     <use xlink:href="#icon-close"></use>
@@ -47,7 +71,7 @@ const handleDelete = () => {
                     </el-form>
                     <div class="styleSet">
                         <div class="styleSetTitle">样式设置</div>
-                        <pointForm />
+                        <component :is="formComponent" />
                     </div>
                     <div class="card_body_footer">
                         <el-button type="primary">保存</el-button>

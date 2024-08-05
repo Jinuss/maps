@@ -58,7 +58,7 @@ onBeforeUnmount(() => {
                 </span>
             </el-tooltip>
         </li>
-        <li class="line">
+        <li class="LineString">
             <el-tooltip class="box-item" effect="dark" content="标线" placement="left" :offset="20">
                 <span role="img" class="anticon">
                     <svg width="1em" height="1em" :fill="currentColor" aria-hidden="true" focusable="false" class="">
@@ -66,7 +66,7 @@ onBeforeUnmount(() => {
                     </svg></span>
             </el-tooltip>
         </li>
-        <li class="polygon">
+        <li class="Polygon">
             <el-tooltip class="box-item" effect="dark" content="标面" placement="left" :offset="20">
                 <span role="img" class="anticon"><svg width="1em" height="1em" :fill="currentColor" aria-hidden="true"
                         focusable="false" class="">

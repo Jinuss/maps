@@ -5,7 +5,7 @@ import * as olStyle from "ol/style";
 import { Point } from "ol/geom";
 import Overlay from "ol/Overlay";
 import { Draw } from "ol/interaction";
-// import { createRegularPolygon } from "ol/interaction/Draw";
+import { createRegularPolygon, createBox } from "ol/interaction/Draw";
 import { getDistance } from "ol/sphere";
 import { transform } from "ol/proj";
 import { v4 as uuidv4 } from "uuid";
@@ -43,17 +43,21 @@ export class MapTools {
   ) {
     this.map = map;
     this.layers = layers;
-    this.type = type;
     this.handle = (event: { coordinate: any }) => {
       const coord = event.coordinate;
-      this.uuid = uuidv4().replace(/-/g, "");
       const marker = this.addMarker(coord);
       const overlay = this.addOverlay(coord);
 
       this.removeListener();
       EventBus.emit("cancel");
 
-      this.callback({ operate: "add", type, uuid: this.uuid, marker, overlay });
+      this.callback({
+        operate: "add",
+        type: this.type,
+        uuid: this.uuid,
+        marker,
+        overlay,
+      });
       this.map.on("click", (event: { pixel: any }) => {
         this.map.forEachFeatureAtPixel(event.pixel, (feature: any) => {
           if (feature instanceof Feature) {
@@ -69,6 +73,7 @@ export class MapTools {
   }
   addListener(type: any) {
     const that = this;
+    that.uuid = uuidv4().replace(/-/g, "");
     that.type = type;
     that.mapEl?.classList.add("draw");
     // 创建一个点击事件监听器
@@ -76,8 +81,11 @@ export class MapTools {
       case "point":
         that.map.on("click", that.handle);
         break;
+      case "LineString":
+      case "Polygon":
+      case "circle":
       case "rect":
-        that.initInteractionReact();
+        that.initInteractionBase(type);
         break;
       case "measure-distance":
         that.initInteraction();
@@ -129,7 +137,6 @@ export class MapTools {
     return marker;
   }
   removeListener() {
-    this.mapEl?.classList.remove("draw");
     this.map.un("click", this.handle);
   }
 
@@ -140,14 +147,45 @@ export class MapTools {
     }),
   });
 
+  style2 = new olStyle.Style({
+    stroke: new olStyle.Stroke({
+      color: "red",
+      width: 1,
+    }),
+    fill: new olStyle.Fill({
+      color: "rgba(255, 0, 0, 0.2)",
+    }),
+  });
+
   draw: Draw | undefined;
   listener: Function = () => {};
-  initInteractionReact() {
-    this.draw = new Draw({
-      source: this.layers.vectorLayer.getSource(),
-      type: "Circle",
-      style: this.style2,
-      // geometryFunction: createRegularPolygon(40),
+  initInteractionBase(type) {
+    if (["circle", "rect"].includes(type)) {
+      this.draw = new Draw({
+        source: this.layers.vectorLayer.getSource(),
+        type: "Circle",
+        style: this.style2,
+        geometryFunction:
+          type == "circle" ? createRegularPolygon(40) : createBox(),
+      });
+    } else {
+      this.draw = new Draw({
+        source: this.layers.vectorLayer.getSource(),
+        type: type,
+        style: this.style2,
+      });
+    }
+    this.map.addInteraction(this.draw);
+    this.draw.on("drawend", (evt: { feature: Feature }) => {
+      evt.feature.setStyle(this.style2);
+      this.map.removeInteraction(this.draw);
+
+      this.callback({
+        operate: "add",
+        type,
+        uuid: this.uuid,
+        feature: evt.feature,
+      });
     });
   }
   formatPonit(coordinate: Coordinate) {
@@ -258,17 +296,9 @@ export class MapTools {
     unByKey(this.listener); // 解绑change事件
     this.sketch = null;
     this.map.removeInteraction(this.draw);
+    this.mapEl?.classList.remove("draw");
     this.measureTooltip = null;
   }
-  style2 = new olStyle.Style({
-    stroke: new olStyle.Stroke({
-      color: "red",
-      width: 1,
-    }),
-    fill: new olStyle.Fill({
-      color: "rgba(255, 0, 0, 0.2)",
-    }),
-  });
   initInteractionPolygon() {
     this.draw = new Draw({
       source: this.layers.vectorLayer.getSource(),
@@ -308,6 +338,7 @@ export class MapTools {
       unByKey(this.listener);
       this.sketch = null;
       this.map.removeInteraction(this.draw);
+      this.mapEl?.classList.remove("draw");
       this.measureTooltip = null;
     });
   }

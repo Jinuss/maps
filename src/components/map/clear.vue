@@ -5,6 +5,7 @@ const mapStore = useMapStore()
 
 const handleClear = () => {
     mapStore.mapTool.addListener("clear")
+    mapStore.mapTool.mapEl?.classList.remove("draw");
 }
 </script>
 <template>
