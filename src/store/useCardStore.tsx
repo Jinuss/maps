@@ -1,5 +1,13 @@
 import { defineStore } from "pinia";
+import { TYPES } from "../const/const.map";
 
+const initlineState = {
+  name: "未命名",
+  mark: "",
+  lineStyle: "line_1",
+  color: "#ff0000",
+  width: 2,
+};
 export const defaultState = {
   type: "",
   uuid: "",
@@ -11,9 +19,15 @@ export const useCardStore = defineStore("cardStore", {
   },
   actions: {
     addData(data: Object) {
-      this.list.push({ ...defaultState, ...data });
+      const { type } = data;
+      let p = { ...defaultState };
+      if (type == TYPES.LINESTRING) {
+        p.formData = initlineState;
+        p = { ...p, ...data };
+      }
+      this.list.push({ ...p, ...data });
       this.showUuid = data.uuid;
-      return data
+      return p;
     },
     setShowUuid(uuid: string) {
       this.showUuid = uuid;

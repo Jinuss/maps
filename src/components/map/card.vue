@@ -20,7 +20,8 @@ let form = ref({ name: "", type: "" })
 cardstore.$onAction(({ name, store, after }) => {
     if (name == "addData") {
         after((p) => {
-            form.value = { ...form.value, ...p }
+            form.value = { ...form.value, ...p, ...p.formData }
+            console.log("🚀 ~ after ~ form.value:", form.value)
         })
     }
 })
@@ -73,7 +74,7 @@ const formComponent = computed(() => {
                     </el-form>
                     <div class="styleSet">
                         <div class="styleSetTitle">样式设置</div>
-                        <component :is="formComponent" />
+                        <component :is="formComponent" :formData="form"/>
                     </div>
                     <div class="card_body_footer">
                         <el-button type="primary">保存</el-button>

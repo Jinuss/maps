@@ -4,7 +4,7 @@ import Feature from "ol/Feature";
 import * as olStyle from "ol/style";
 import { Point } from "ol/geom";
 import Overlay from "ol/Overlay";
-import { Draw } from "ol/interaction";
+import { Draw, Interaction } from "ol/interaction";
 import { createRegularPolygon, createBox } from "ol/interaction/Draw";
 import { getDistance } from "ol/sphere";
 import { transform } from "ol/proj";
@@ -39,12 +39,15 @@ export class MapTools {
   constructor(map: any, layers: any, callback: Function = () => {}) {
     this.map = map;
     this.layers = layers;
-    const coordinateEl = document.querySelector(".brp");
+    const coordinateEl: Element | null = document.querySelector(".brp");
     this.map.on("pointermove", (evt) => {
       var lonLat = transform(evt.coordinate, "EPSG:3857", "EPSG:4326");
-      if (lonLat&&lonLat.length) {
-        coordinateEl.innerHTML = `经度: ${lonLat[0].toFixed(3)}, 纬度: ${lonLat[1].toFixed(3)}`;
-        coordinateEl.style.display='block'
+      if (lonLat && lonLat.length && coordinateEl) {
+        coordinateEl.innerHTML = `经度: ${lonLat[0].toFixed(
+          3
+        )}, 纬度: ${lonLat[1].toFixed(3)}`;
+
+        coordinateEl.style.display = "block";
       }
     });
     this.handle = (event: { coordinate: any }) => {
@@ -80,7 +83,6 @@ export class MapTools {
     that.uuid = uuidv4().replace(/-/g, "");
     that.type = type;
     that.mapEl?.classList.add("draw");
-    // 创建一个点击事件监听器
     switch (type) {
       case TYPES.POINT:
         that.map.on("click", that.handle);
@@ -154,16 +156,16 @@ export class MapTools {
   style2 = new olStyle.Style({
     stroke: new olStyle.Stroke({
       color: "red",
-      width: 1,
+      width: 2,
     }),
     fill: new olStyle.Fill({
       color: "rgba(255, 0, 0, 0.2)",
     }),
   });
 
-  draw: Draw | undefined;
+  draw: Interaction | undefined;
   listener: Function = () => {};
-  initInteractionBase(type) {
+  initInteractionBase(type: string) {
     if ([TYPES.CIRCLE, TYPES.RECT].includes(type)) {
       this.draw = new Draw({
         source: this.layers.vectorLayer.getSource(),
