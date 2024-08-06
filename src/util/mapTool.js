@@ -25,3 +25,31 @@ export const getArea = (geometry, format = true) => {
     const area = sphere.getArea(geometry)
     return format ? formatArea(area) : area
 }
+
+export const convertToRGBA = (opacity, color) => {
+    let rgbaColor = '';
+
+    if (color.includes('rgba')) {
+        rgbaColor = color.replace(/[\d\.]+\)$/g, opacity.toString() + ')');
+    } else if (color.includes('rgb')) {
+        const rgbValues = color.match(/\d+/g); 
+        const [r, g, b] = rgbValues.map(Number);
+        rgbaColor = `rgba(${r},${g},${b},${opacity})`;
+    } else {
+        const tempDiv = document.createElement('div');
+        tempDiv.style.color = color;
+        document.body.appendChild(tempDiv);
+        const computedColor = window.getComputedStyle(tempDiv).color;
+        document.body.removeChild(tempDiv);
+
+        if (computedColor.startsWith('rgb')) {
+            const rgbValues = computedColor.match(/\d+/g);
+            const [r, g, b] = rgbValues.map(Number);
+            rgbaColor = `rgba(${r},${g},${b},${opacity})`;
+        } else {
+            throw new Error('Invalid color value');
+        }
+    }
+
+    return rgbaColor;
+}

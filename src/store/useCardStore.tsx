@@ -1,13 +1,6 @@
 import { defineStore } from "pinia";
-import { TYPES } from "../const/const.map";
+import { TYPES, INIT_LINE_STATE, INIT_PLOYGON_STATE } from "../const/const.map";
 
-const initlineState = {
-  name: "未命名",
-  mark: "",
-  lineStyle: "line_1",
-  color: "#ff0000",
-  width: 2,
-};
 export const defaultState = {
   type: "",
   uuid: "",
@@ -20,12 +13,18 @@ export const useCardStore = defineStore("cardStore", {
   actions: {
     addData(data: Object) {
       const { type } = data;
-      let p = { ...defaultState };
-      if (type == TYPES.LINESTRING) {
-        p.formData = initlineState;
-        p = { ...p, ...data };
+      let p = { ...defaultState, ...data };
+      switch (type) {
+        case TYPES.LINESTRING:
+          p.formData = INIT_LINE_STATE;
+          break;
+        case TYPES.POLYGON:
+        case TYPES.RECT:
+          p.formData = INIT_PLOYGON_STATE;
+          break;
+        default:
       }
-      this.list.push({ ...p, ...data });
+      this.list.push({ ...p });
       this.showUuid = data.uuid;
       return p;
     },

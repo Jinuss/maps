@@ -111,7 +111,7 @@ const changLineStyle = (lineStyle) => {
                     width: 4,
                     lineDash: [10, 50],
                     lineCap: "square",
-                    lineDashOffset:8
+                    lineDashOffset: 8
                 })
             })]
             form.value.width = 8;

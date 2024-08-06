@@ -43,3 +43,19 @@ export const LINE_FORM_LINE_STYLES = [
     value: "line_8",
   },
 ];
+
+export const INIT_LINE_STATE = {
+  name: "未命名",
+  mark: "",
+  lineStyle: "line_1",
+  color: "#ff0000",
+  width: 2,
+};
+
+export const INIT_PLOYGON_STATE = {
+  name: "未命名",
+  mark: "",
+  color: "#ff0000",
+  width: 2,
+  opacity: 0.3,
+};

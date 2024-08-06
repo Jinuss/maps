@@ -1,11 +1,13 @@
 <script setup>
 import { reactive, watch, onMounted, computed, ref } from 'vue';
 import { storeToRefs } from 'pinia';
-import { Style, Icon } from "ol/style";
+import { Style, Icon, Stroke, Fill } from "ol/style";
 import Overlay from 'ol/Overlay'
 import { useCardStore, useMapStore } from '../../../store/index.tsx';
 import locImgSrc from "../../../assets/loc.png";
-import { getSVGForSrcById } from "../../../util/index.js";
+import polygon3 from "../../../assets/polygon3.png";
+import { getSVGForSrcById, convertToRGBA } from "../../../util/index";
+import Slider from '../../../baseComponent/Slider.vue';
 
 const cardstore = useCardStore()
 const { setItem, getItem: getMarkerData } = cardstore
@@ -13,26 +15,79 @@ const { showUuid, list } = storeToRefs(cardstore)
 
 const mapStore = useMapStore()
 const { mapTool } = storeToRefs(mapStore)
-const form = reactive({
+
+const props = defineProps({
+    formData: Object
+})
+
+const form = ref({
     uuid: showUuid.value,
-    color: "red",
-    size: 25,
-    symbolId: null,
-    showName: true,
-    name: "point"
+    ...props.formData
 })
 
 const changeColor = (color) => {
-    document.querySelector(`#marker_${form.uuid}`).style.borderColor = color
+    form.value.color = color;
+
+    let currentStyle = form.value.feature.getStyle();
+
+    form.value.feature.setStyle(new Style({
+        stroke: currentStyle.getStroke(),
+        fill: new Fill({
+            color: convertToRGBA(form.value.opacity, color)
+        })
+    }));
 }
 
-const removeClass = () => {
-    let aLi = document.querySelectorAll("span")
-    aLi.forEach((i) => { i.classList.remove("active") })
+const changeWidth = (wh) => {
+    form.value.width = wh;
+    let currentStyle = form.value.feature.getStyle();
+    form.value.feature.setStyle(new Style({
+        stroke: new Stroke({
+            color: currentStyle.getStroke().getColor(),
+            width: wh,
+            lineDash: currentStyle.getStroke().getLineDash()
+        }),
+        fill: currentStyle.getFill()
+    }));
+}
+
+const changeOpacity = (opacity) => {
+    form.value.opacity = opacity;
+
+    let currentStyle = form.value.feature.getStyle();
+
+    form.value.feature.setStyle(new Style({
+        stroke: currentStyle.getStroke(),
+        fill: new Fill({
+            color: convertToRGBA(opacity, currentStyle.getFill().getColor())
+        })
+    }));
+}
+
+const changeStyle = () => {
+    let currentStyle = form.value.feature.getStyle();
+    var cnv = document.createElement('canvas');
+    var ctx = cnv.getContext('2d');
+    var img = new Image();
+    img.src = polygon3;
+    img.onload = function () {
+        var pattern = ctx.createPattern(img, 'repeat');
+        form.value.feature.setStyle(new Style({
+            stroke: currentStyle.getStroke(),
+            fill: new Fill({
+                color: pattern
+            })
+        }));
+    };
 }
 
 onMounted(() => {
-
+    const polygonLi = document.querySelectorAll('li')
+    polygonLi.forEach(element => {
+        element.addEventListener('click', () => {
+            changeStyle()
+        })
+    });
 })
 
 </script>
@@ -52,10 +107,10 @@ onMounted(() => {
             <el-color-picker v-model="form.color" @change="changeColor" show-alpha />
         </el-form-item>
         <el-form-item label="透明度:">
-            <el-slider v-model="form.size" />
+            <slider :value="form.opacity" :min="0" :step="0.1" :max="1" @change="changeOpacity" />
         </el-form-item>
         <el-form-item label="轮廓宽:">
-            <el-slider v-model="form.size" />
+            <slider :value="form.width" :min="1" :max="12" @change="changeWidth" />
         </el-form-item>
     </el-form>
 </template>
