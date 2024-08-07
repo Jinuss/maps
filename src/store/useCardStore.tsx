@@ -1,5 +1,10 @@
 import { defineStore } from "pinia";
-import { TYPES, INIT_LINE_STATE, INIT_PLOYGON_STATE } from "../const/const.map";
+import {
+  TYPES,
+  INIT_LINE_STATE,
+  INIT_PLOYGON_STATE,
+  INIT_CIRCLE_STATE,
+} from "../const/const.map";
 
 export const defaultState = {
   type: "",
@@ -11,7 +16,7 @@ export const useCardStore = defineStore("cardStore", {
     return { list: [], showUuid: "" };
   },
   actions: {
-    addData(data: Object) {
+    addData(data: { type: string }) {
       const { type } = data;
       let p = { ...defaultState, ...data };
       switch (type) {
@@ -22,6 +27,8 @@ export const useCardStore = defineStore("cardStore", {
         case TYPES.RECT:
           p.formData = INIT_PLOYGON_STATE;
           break;
+        case TYPES.CIRCLE:
+          p.formData = INIT_CIRCLE_STATE;
         default:
       }
       this.list.push({ ...p });

@@ -12,7 +12,7 @@ import { LINE_FORM_LINE_STYLES } from '../../../const/const.map'
 
 const cardstore = useCardStore()
 const { setItem, getItem: getMarkerData } = cardstore
-const { showUuid, list } = storeToRefs(cardstore)
+const { showUuid } = storeToRefs(cardstore)
 
 const mapStore = useMapStore()
 const { mapTool } = storeToRefs(mapStore)
@@ -323,7 +323,7 @@ const changeWidth = (width) => {
             </el-select>
         </el-form-item>
         <el-form-item label="颜色:">
-            <el-color-picker v-model="form.color" @change="changeColor" show-alpha />
+            <el-color-picker v-model="form.color" @change="changeColor" @active-change="changeColor" show-alpha />
         </el-form-item>
         <el-form-item label="线宽:">
             <el-slider v-model="form.width" :max="10" :min="1" @change="changeWidth" />

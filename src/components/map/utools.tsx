@@ -172,7 +172,7 @@ export class MapTools {
         type: "Circle",
         style: this.style2,
         geometryFunction:
-          type === TYPES.CIRCLE ? createRegularPolygon(40) : createBox(),
+          type === TYPES.CIRCLE ? createRegularPolygon(400) : createBox(),
       });
     } else {
       this.draw = new Draw({

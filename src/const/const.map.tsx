@@ -57,5 +57,13 @@ export const INIT_PLOYGON_STATE = {
   mark: "",
   color: "#ff0000",
   width: 2,
-  opacity: 0.3,
+  opacity: 30,
+};
+
+export const INIT_CIRCLE_STATE = {
+  name: "未命名",
+  mark: "",
+  color: "#ff0000",
+  width: 2,
+  opacity: 30,
 };

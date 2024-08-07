@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 
 const props = defineProps({
     value: {
@@ -8,19 +8,24 @@ const props = defineProps({
     },
     max: Number,
     min: Number,
-    step:Number
+    step: Number
 })
+
 const sliderValue = ref(props.value)
 
+watch(() => props.value, (newVal) => {
+    sliderValue.value = newVal
+})
 const emit = defineEmits(['change'])
 const changeSlider = (val) => {
     sliderValue.value = val;
-    emit('change',val)
+    emit('change', val)
 }
 </script>
 <template>
     <div class="slider">
-        <el-slider v-model="sliderValue" :max="props.max" :step="props.step" :min="props.min" @change="changeSlider" />
+        <el-slider v-model="sliderValue" :max="props.max" :step="props.step" :min="props.min" @change="changeSlider"
+            @input="changeSlider" />
         <span>{{ sliderValue }}</span>
     </div>
 </template>
