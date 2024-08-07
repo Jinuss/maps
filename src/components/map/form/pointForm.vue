@@ -138,7 +138,7 @@ const changeShowName = (visible) => {
             </div>
         </el-form-item>
         <el-form-item label="符号颜色:">
-            <el-color-picker v-model="form.color" @change="changeColor" show-alpha />
+            <el-color-picker v-model="form.color" @change="changeColor" @active-change="changeColor" show-alpha />
         </el-form-item>
         <el-form-item label="符号大小:">
             <el-input-number v-model="form.size" :step="1" :precision="0" :max="50" :min="16" @change="changeSize" />

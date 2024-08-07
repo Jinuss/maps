@@ -50,6 +50,20 @@ export class MapTools {
         coordinateEl.style.display = "block";
       }
     });
+
+    this.map.on("click", (event: { pixel: any }) => {
+      var features = this.map.getFeaturesAtPixel(event.pixel);
+      if (features && !!features.length) {
+        let feature = features[0];
+        if (feature instanceof Feature) {
+          const featureId = feature.getId("id") || feature.get("id");
+          if (featureId) {
+            this.callback({ operate: "click", uuid: featureId });
+          }
+        }
+      }
+    });
+
     this.handle = (event: { coordinate: any }) => {
       const coord = event.coordinate;
       const marker = this.addMarker(coord);
@@ -64,16 +78,6 @@ export class MapTools {
         uuid: this.uuid,
         marker,
         overlay,
-      });
-      this.map.on("click", (event: { pixel: any }) => {
-        this.map.forEachFeatureAtPixel(event.pixel, (feature: any) => {
-          if (feature instanceof Feature) {
-            const featureId = feature.get("id");
-            if (featureId) {
-              this.callback({ operate: "click", uuid: featureId });
-            }
-          }
-        });
       });
     };
     this.callback = callback;
@@ -183,9 +187,11 @@ export class MapTools {
     }
     this.map.addInteraction(this.draw);
     this.draw.on("drawend", (evt: { feature: Feature }) => {
+      console.log("🚀 ~ MapTools ~ this.draw.on ~ this.uuid:", this.uuid);
       evt.feature.setStyle(this.style2);
+      evt.feature.setId(this.uuid);
       this.map.removeInteraction(this.draw);
-
+      EventBus.emit("cancel");
       this.callback({
         operate: "add",
         type,
@@ -304,6 +310,7 @@ export class MapTools {
     this.map.removeInteraction(this.draw);
     this.mapEl?.classList.remove("draw");
     this.measureTooltip = null;
+    EventBus.emit("cancel");
   }
   initInteractionPolygon() {
     this.draw = new Draw({
@@ -346,6 +353,7 @@ export class MapTools {
       this.map.removeInteraction(this.draw);
       this.mapEl?.classList.remove("draw");
       this.measureTooltip = null;
+      EventBus.emit("cancel");
     });
   }
 }

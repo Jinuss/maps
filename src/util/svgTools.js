@@ -5,11 +5,11 @@ export const getSVGForSrcById = ({ symbolId = "icon-symbol-one", color = 'red' }
       return src
 }
 export const getSVGElementById = ({ symbolId, color = 'red' }) => {
-     symbolId = symbolId||"icon-symbol-one"
+      symbolId = symbolId || "icon-symbol-one"
       var oSvg = document.querySelector(`symbol#${symbolId}`)
       let paths = ""
       if (oSvg) {
-            var pathRegex = /<path[^>]*>.*?<\/path>/gi;
+            var pathRegex = /<path[^>]*>[^<]*<\/path>/gi
             var pathMatches = oSvg.outerHTML.match(pathRegex);
             if (pathMatches && pathMatches.length) {
                   paths = pathMatches.join("")

@@ -16,8 +16,9 @@ import brp from './brp.vue'
 import "ol/ol.css";
 import "./style.css";
 import { MapTools } from './utools.tsx'
-import { useMapStore } from "../../store";
+import { useMapStore, useCardStore } from "../../store";
 
+const cardStore = useCardStore();
 const MapStore = useMapStore()
 function getTileLayer(url, visible) {
   return new TileLayer({
@@ -54,7 +55,14 @@ onMounted(() => {
 
   map.addControl(new FullScreen());
   map.addControl(new ScaleLine());
-  MapTool = new MapTools(map, layers)
+  const callback = ({ operate, type, uuid, ...rest }) => {
+    if (operate == "add") {
+      cardStore.addData({ type, uuid, ...rest });
+    } else {
+      cardStore.setShowUuid(uuid)
+    }
+  }
+  MapTool = new MapTools(map, layers, callback)
   MapStore.setMap(MapTool)
   emit("setMap", map, layers);
   GOOGLE_LAYER.setVisible(false);

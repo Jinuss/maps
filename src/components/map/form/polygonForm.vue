@@ -170,7 +170,7 @@ const changeStyle = async (type) => {
 }
 
 onMounted(() => {
-    const polygonLi = document.querySelectorAll('li')
+    const polygonLi = document.querySelectorAll('.polygon_content li')
     polygonLi.forEach(element => {
         element.addEventListener('click', () => {
             let type = element.getAttribute('type')

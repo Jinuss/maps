@@ -172,6 +172,6 @@ ul>li.active {
 }
 
 ul>li.active svg {
-    fill: #3385ff;
+fill: #3385ff !important;
 }
 </style>

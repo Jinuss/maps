@@ -30,9 +30,16 @@ const handleClose = () => {
 }
 
 const handleDelete = () => {
-    let { marker: targetMarker, overlay: targetOverlay } = getItem()
-    MapStore.mapTool.map.removeOverlay(targetOverlay);
-    MapStore.mapTool.layers.vectorLayer.getSource().removeFeature(targetMarker)
+    let { marker: targetMarker, overlay: targetOverlay, feature } = getItem()
+    if (targetOverlay) {
+        MapStore.mapTool.map.removeOverlay(targetOverlay);
+    }
+    if (targetMarker) {
+        MapStore.mapTool.layers.vectorLayer.getSource().removeFeature(targetMarker)
+    }
+    if (feature) {
+        MapStore.mapTool.layers.vectorLayer.getSource().removeFeature(feature)
+    }
     removeItem({ uuid: showUuid.value })
     setShowUuid('')
 }
@@ -74,7 +81,7 @@ const formComponent = computed(() => {
                     </el-form>
                     <div class="styleSet">
                         <div class="styleSetTitle">样式设置</div>
-                        <component :is="formComponent" :formData="form"/>
+                        <component :is="formComponent" :formData="form" />
                     </div>
                     <div class="card_body_footer">
                         <el-button type="primary">保存</el-button>
