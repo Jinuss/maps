@@ -1,4 +1,6 @@
-import * as sphere from 'ol/sphere'
+import * as sphere from 'ol/sphere';
+import { Style, Stroke, Icon } from 'ol/style';
+import { Point } from 'ol/geom'
 
 export const formatDistance = (dis) => {
     if (dis > 100) {
@@ -60,6 +62,12 @@ export const convertToRGBA = (opacity, color) => {
     return rgbaColor;
 }
 
+/**
+ * 获取图像模板
+ * @param {*} imgUrl  图像源
+ * @param {*} opacity 透明度
+ * @returns 
+ */
 export const getImagePattern = (imgUrl, opacity = 1) => {
     return new Promise((resolve, reject) => {
         var img = new Image();
@@ -85,4 +93,43 @@ export const getImagePattern = (imgUrl, opacity = 1) => {
             reject(error);
         };
     })
+}
+
+export const getStyleFunction = ({ steps, color, width, imgsrc, scale, wrapperRotation }) => {
+    steps = steps || 40
+    scale = scale || 0.5
+    return (feature, resolution) => {
+        const geometry = feature.getGeometry()
+        console.log("🚀 ~ return ~ resolution:", resolution)
+        var styles = [
+            new Style({
+                stroke: new Stroke({
+                    color: color,
+                    width: width
+                })
+            })
+        ];
+        let length = geometry.getLength();
+        let geo_steps = steps * resolution;
+        let num = parseInt(length / geo_steps);
+        for (let i = 1; i <= num; i++) {
+            let fraction = i / (num + 1)
+            let arraw_coor = geometry.getCoordinateAt(fraction);
+            let previousCoordinate = geometry.getCoordinateAt(fraction - 0.001);
+            let nextCoordinate = geometry.getCoordinateAt(fraction + 0.001);
+            let rotation = Math.atan2(nextCoordinate[1] - previousCoordinate[1], nextCoordinate[0] - previousCoordinate[0]);
+            styles.push(new Style({
+                geometry: new Point(arraw_coor),
+                image: new Icon({
+                    src: imgsrc,
+                    scale: scale,
+                    anchor: [0.5, 0.5],
+                    anchorXUnits: 'fraction',
+                    anchorYUnits: 'fraction',
+                    rotation: wrapperRotation(rotation)
+                })
+            }));
+        }
+        return styles;
+    }
 }

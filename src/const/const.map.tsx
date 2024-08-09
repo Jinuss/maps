@@ -1,10 +1,17 @@
-// 类型
+// 基本类型
 export const TYPES = {
   POINT: "Point",
   LINESTRING: "LineString",
   POLYGON: "Polygon",
   CIRCLE: "Circle",
   RECT: "Rect",
+  MEASUREDISTANCE: "MEASUREDISTANCE",
+  MEASUREPOLYGON: "MEASUREPOLYGON",
+};
+
+//专题图类型
+export const TOPICTYPES = {
+  TOPICTYPES: "TOPICTYPES",
 };
 
 //卡片标题

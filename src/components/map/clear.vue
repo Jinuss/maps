@@ -26,7 +26,7 @@ ul {
     box-shadow: 0 0 4px 2px #b1b1b180;
     position: absolute;
     right: 10px;
-    top: 365px;
+    top: 405px;
     z-index: 5;
 }
 

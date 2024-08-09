@@ -1,5 +1,5 @@
 <script setup>
-import { reactive, watch, onMounted, computed, ref } from 'vue';
+import { reactive, onMounted, computed, ref } from 'vue';
 import { storeToRefs } from 'pinia';
 import { Style, Icon, Stroke, Fill } from "ol/style";
 import Overlay from 'ol/Overlay';
@@ -8,7 +8,6 @@ import locImgSrc from "../../../assets/loc.png";
 import polygon3 from "../../../assets/polygon3.png";
 import polygon4 from "../../../assets/polygon4.png";
 import polygon5 from "../../../assets/polygon5.png";
-import polygonsvg from '../../../assets/polygon3.svg'
 import { getSVGForSrcById, convertToRGBA, getImagePattern } from "../../../util/index";
 import Slider from '../../../baseComponent/Slider.vue';
 

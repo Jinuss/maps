@@ -1,14 +1,16 @@
 <script setup>
 import { ref, onMounted, onBeforeUnmount } from "vue";
 import { storeToRefs } from 'pinia';
-import { useMapStore, useCardStore } from "../../store";
+import { useMapStore, useCardStore, useTopicLayerStore } from "../../store";
 import { EventBus } from '../../util/index'
-import { TYPES } from "../../const/const.map";
+import { TYPES, TOPICTYPES } from "../../const/const.map";
 
 const { mapTool: MapTool } = storeToRefs(useMapStore())
 const cardStore = useCardStore()
 const currentColor = ref("#262626")
 const ulRef = ref()
+
+const { setVisible } = useTopicLayerStore()
 
 const removeClass = () => {
     let aLi = document.querySelectorAll("li")
@@ -37,10 +39,15 @@ const handleCompleteCallback = ({ operate, type, uuid, ...rest }) => {
     }
 }
 const handleClickType = (type) => {
-    if (MapTool.value) {
-        MapTool.value.callback = handleCompleteCallback
-        MapTool.value.removeListener()
-        MapTool.value.addListener(type)
+    if (TYPES[type.toUpperCase()]) {
+        setVisible(false)
+        if (MapTool.value) {
+            MapTool.value.callback = handleCompleteCallback
+            MapTool.value.removeListener()
+            MapTool.value.addListener(type)
+        }
+    } else if (TOPICTYPES[type]) {
+        setVisible(true)
     }
 }
 onBeforeUnmount(() => {
@@ -91,7 +98,7 @@ onBeforeUnmount(() => {
                     </svg></span>
             </el-tooltip>
         </li>
-        <li class="measure-distance">
+        <li :class="TYPES.MEASUREDISTANCE">
             <el-tooltip class="box-item" effect="dark" content="测距" placement="left" :offset="20">
                 <span role="img" class="anticon"><svg width="1em" height="1em" :fill="currentColor" aria-hidden="true"
                         focusable="false" class="">
@@ -99,11 +106,19 @@ onBeforeUnmount(() => {
                     </svg></span>
             </el-tooltip>
         </li>
-        <li class="measure-polygon">
+        <li :class="TYPES.MEASUREPOLYGON">
             <el-tooltip class="box-item" effect="dark" content="测面" placement="left" :offset="20">
                 <span role="img" class="anticon"><svg width="1em" height="1em" :fill="currentColor" aria-hidden="true"
                         focusable="false" class="">
                         <use xlink:href="#icon-measure-polygon"></use>
+                    </svg></span>
+            </el-tooltip>
+        </li>
+        <li :class="TOPICTYPES.TOPICTYPES">
+            <el-tooltip class="box-item" effect="dark" content="专题图" placement="left" :offset="20">
+                <span role="img" class="anticon"><svg width="1em" height="1em" :fill="currentColor" aria-hidden="true"
+                        focusable="false" class="">
+                        <use xlink:href="#icon-topic-layers"></use>
                     </svg></span>
             </el-tooltip>
         </li>
@@ -172,6 +187,6 @@ ul>li.active {
 }
 
 ul>li.active svg {
-fill: #3385ff !important;
+    fill: #3385ff !important;
 }
 </style>

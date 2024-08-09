@@ -60,7 +60,7 @@ const formComponent = computed(() => {
 </script>
 
 <template>
-    <div class="card_panel" v-show="!!showUuid" :key="showUuid">
+    <div class="card_panel" v-if="!!showUuid" :key="showUuid">
         <div class="card_header">
             <span>{{ CARD_TITLE[form.type] }}</span>
             <span role="img" tabindex="-1" class="anticon Head_close__0vFMi" @click="handleClose">
