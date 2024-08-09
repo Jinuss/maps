@@ -45,7 +45,6 @@ let MapTool = null;
 onMounted(() => {
   const layers = { AMAP_LAYER, GOOGLE_LAYER, vectorLayer };
   const extent = olProj.get('EPSG:3857').getExtent()
-  console.log("🚀 ~ onMounted ~ extent:", extent)
   const map = new Map({
     layers: [AMAP_LAYER, GOOGLE_LAYER, vectorLayer],
     target: "map",
