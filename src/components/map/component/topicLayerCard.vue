@@ -4,6 +4,7 @@ import { storeToRefs } from 'pinia';
 import { useTopicLayerStore, useMapStore } from '../../../store';
 import { ClusterTools } from '../MapTools/ClusterTools';
 import { HeatMapTools } from '../MapTools/HeatMapTools';
+import { MaskTools } from '../MapTools/MaskTools';
 
 const mapStore = useMapStore()
 const topicStore = useTopicLayerStore()
@@ -13,6 +14,8 @@ const { visible } = storeToRefs(topicStore)
 let clusterTool = ref()
 
 let heatMapTool = ref()
+
+let maskTool = ref()
 
 const hideCard = () => {
     topicStore.setVisible(false)
@@ -34,6 +37,13 @@ const handleHeatMap = () => {
     heatMapTool.value.addFeatures()
 }
 
+const handleMaskMap = () => {
+    if (!maskTool.value) {
+        maskTool.value = new MaskTools({ mapTool: mapStore.mapTool })
+    }
+
+}
+
 onMounted(() => {
 })
 
@@ -53,6 +63,7 @@ onMounted(() => {
                 <div class="topic_list">
                     <el-button type="primary" @click="handleCluster">聚合图层</el-button>
                     <el-button type="primary" @click="handleHeatMap">热力图</el-button>
+                    <el-button type="primary" @click="handleMaskMap">蒙版图</el-button>
                 </div>
             </div>
         </div>

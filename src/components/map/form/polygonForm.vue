@@ -103,6 +103,7 @@ const changeOpacity = async (opacity) => {
 
 const changeStyle = async (type) => {
     let currentStyle = form.value.feature.getStyle();
+    console.log(form.value.feature.getGeometry())
     let newStyle;
     const colors = {
         polygon_1: {

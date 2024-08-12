@@ -1,6 +1,6 @@
 import Map from "ol/Map";
 import Feature from "ol/Feature";
-import * as IDW from "ol-ext/source/IDW.js";
+import * as IDW from "ol-ext/source/IDW";
 import { Point } from "ol/geom";
 import { Style, Text, Stroke } from "ol/style";
 import { Vector as VectorSource } from "ol/source";
@@ -27,7 +27,7 @@ export class HeatMapTools {
   initHeatMap() {
     this.idwSource = new IDW.default({
       source: new VectorSource(),
-      weight: "val",
+      weight: "weightVal",
     });
 
     this.map.addLayer(
@@ -44,7 +44,7 @@ export class HeatMapTools {
           return new Style({
             // image: new ol.style.Circle({ radius: 2, fill: new ol.style.Fill({ color: '#000' }) }),
             text: new Text({
-              text: f.get("val").toString(),
+              text: f.get("weightVal").toString(),
               stroke: new Stroke({ color: [255, 255, 255, 128], width: 1.25 }),
             }),
           });
@@ -63,7 +63,7 @@ export class HeatMapTools {
       var f = new Feature(
         new Point([ext[0] + dx * Math.random(), ext[1] + dy * Math.random()])
       );
-      f.set("val", Math.round(Math.random() * 100));
+      f.set("weightVal", Math.round(Math.random() * 100));
       features.push(f);
     }
     this.idwSource.getSource().addFeatures(features);
