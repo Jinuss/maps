@@ -1,3 +1,6 @@
+@import "node_modules/ol/ol.css";
+@import "node_modules/ol-ext/dist/ol-ext.css";
+
 * {
   margin: 0;
   padding: 0;

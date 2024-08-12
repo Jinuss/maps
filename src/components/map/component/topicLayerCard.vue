@@ -3,6 +3,7 @@ import { onMounted, ref } from 'vue'
 import { storeToRefs } from 'pinia';
 import { useTopicLayerStore, useMapStore } from '../../../store';
 import { ClusterTools } from '../MapTools/ClusterTools';
+import { HeatMapTools } from '../MapTools/HeatMapTools';
 
 const mapStore = useMapStore()
 const topicStore = useTopicLayerStore()
@@ -11,16 +12,26 @@ const { visible } = storeToRefs(topicStore)
 
 let clusterTool = ref()
 
+let heatMapTool = ref()
+
 const hideCard = () => {
     topicStore.setVisible(false)
 }
 
-const handle = () => {
+const handleCluster = () => {
     if (!clusterTool.value) {
         clusterTool.value = new ClusterTools({ mapTool: mapStore.mapTool })
     }
 
     clusterTool.value.createMarkers()
+}
+
+const handleHeatMap = () => {
+    if (!heatMapTool.value) {
+        heatMapTool.value = new HeatMapTools({ mapTool: mapStore.mapTool })
+    }
+
+    heatMapTool.value.addFeatures()
 }
 
 onMounted(() => {
@@ -40,7 +51,8 @@ onMounted(() => {
         <div class="card_body">
             <div class="container">
                 <div class="topic_list">
-                    <el-button type="primary" @click="handle">聚合图层</el-button>
+                    <el-button type="primary" @click="handleCluster">聚合图层</el-button>
+                    <el-button type="primary" @click="handleHeatMap">热力图</el-button>
                 </div>
             </div>
         </div>

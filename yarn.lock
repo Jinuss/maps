@@ -633,6 +633,11 @@ normalize-wheel-es@^1.2.0:
   resolved "https://registry.yarnpkg.com/normalize-wheel-es/-/normalize-wheel-es-1.2.0.tgz#0fa2593d619f7245a541652619105ab076acf09e"
   integrity sha512-Wj7+EJQ8mSuXr2iWfnujrimU35R2W4FAErEyTmJoJ7ucwTn2hOUSsRehMb5RSYkxXGTM7Y9QpvPmp++w5ftoJw==
 
+ol-ext@^4.0.21:
+  version "4.0.21"
+  resolved "https://registry.yarnpkg.com/ol-ext/-/ol-ext-4.0.21.tgz#78ba613d1b95e66629c3ce252da6f8367ba0f3eb"
+  integrity sha512-xP4oVD5KBvJW6P9UQwmPcgqMDh6nzUrHjle4qhNqzRW7OkP02mObw5UMGAgz+uhIW8doJ3hYCwy2HcpU1JFpig==
+
 ol@^10.0.0:
   version "10.0.0"
   resolved "https://registry.yarnpkg.com/ol/-/ol-10.0.0.tgz#2d37ca13a18375b20b873a4264d69feda3936d8d"
