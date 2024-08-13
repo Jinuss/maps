@@ -6,6 +6,7 @@ import * as olStyle from "ol/style";
 import Feature from "ol/Feature";
 import { Point } from "ol/geom";
 import Map from "../components/map/index.vue";
+import GithubIcon from "../baseComponent/GithubIcon.vue";
 import locImgSrc from "../assets/loc.png";
 
 const address = ref("");
@@ -88,6 +89,7 @@ const remoteMethod = (query) => {
 <template>
   <div class="home">
     <div class="header">
+      <GithubIcon />
       <!-- <el-form-item label="POI:">
         <el-input
           placeholder="请输入搜索位置"
