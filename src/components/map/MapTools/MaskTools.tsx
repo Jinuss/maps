@@ -1,14 +1,8 @@
 import Map from "ol/Map";
-import Feature from "ol/Feature";
 import { GeoJSON } from "ol/format";
-import * as IDW from "ol-ext/source/IDW";
 import Mask from "ol-ext/filter/Mask";
 import Crop from "ol-ext/filter/Crop";
-import { transform } from "ol/proj";
-import { Point } from "ol/geom";
-import { Style, Text, Stroke, Fill } from "ol/style";
-import { Vector as VectorSource } from "ol/source";
-import { Vector as VectorLayer, Image as ImageLayer } from "ol/layer";
+import { Fill } from "ol/style";
 import { MapTools } from "./index";
 import geojson from "../assets/hongshang.json";
 
@@ -18,9 +12,9 @@ export class MaskTools {
   constructor({ mapTool }: { mapTool: MapTools }) {
     this.mapTool = mapTool;
     this.map = mapTool.map;
-    this.initHeatMap();
+    this.initMaskMAp();
   }
-  initHeatMap() {
+  initMaskMAp() {
     console.log("🚀 ~ features:", geojson);
 
     var f = new GeoJSON().readFeature(geojson.features[0]);

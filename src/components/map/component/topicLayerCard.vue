@@ -5,6 +5,7 @@ import { useTopicLayerStore, useMapStore } from '../../../store';
 import { ClusterTools } from '../MapTools/ClusterTools';
 import { HeatMapTools } from '../MapTools/HeatMapTools';
 import { MaskTools } from '../MapTools/MaskTools';
+import { WeatherTools } from '../MapTools/WeatherTools'
 
 const mapStore = useMapStore()
 const topicStore = useTopicLayerStore()
@@ -16,6 +17,8 @@ let clusterTool = ref()
 let heatMapTool = ref()
 
 let maskTool = ref()
+
+let weatherTool = ref()
 
 const hideCard = () => {
     topicStore.setVisible(false)
@@ -44,6 +47,12 @@ const handleMaskMap = () => {
 
 }
 
+const handleWeatherMap = () => {
+    if (!weatherTool.value) {
+        weatherTool.value = new WeatherTools({ mapTool: mapStore.mapTool })
+    }
+}
+
 onMounted(() => {
 })
 
@@ -64,6 +73,7 @@ onMounted(() => {
                     <el-button type="primary" @click="handleCluster">聚合图层</el-button>
                     <el-button type="primary" @click="handleHeatMap">热力图</el-button>
                     <el-button type="primary" @click="handleMaskMap">蒙版图</el-button>
+                    <el-button type="primary" @click="handleWeatherMap">气象专题图</el-button>
                 </div>
             </div>
         </div>

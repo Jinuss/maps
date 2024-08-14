@@ -13,13 +13,7 @@ export class HeatMapTools {
   markers: Array<Feature> = [];
   markersLimitNum: number = 1000;
   idwSource: IDW;
-  constructor({
-    mapTool,
-    markersLimitNum = 50,
-  }: {
-    mapTool: MapTools;
-    markersLimitNum: number;
-  }) {
+  constructor({ mapTool }: { mapTool: MapTools; markersLimitNum: number }) {
     this.mapTool = mapTool;
     this.map = mapTool.map;
     this.initHeatMap();
@@ -42,7 +36,6 @@ export class HeatMapTools {
         source: this.idwSource.getSource(),
         style: function (f) {
           return new Style({
-            // image: new ol.style.Circle({ radius: 2, fill: new ol.style.Fill({ color: '#000' }) }),
             text: new Text({
               text: f.get("weightVal").toString(),
               stroke: new Stroke({ color: [255, 255, 255, 128], width: 1.25 }),
