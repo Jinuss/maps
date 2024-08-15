@@ -5,7 +5,8 @@ import { useTopicLayerStore, useMapStore } from '../../../store';
 import { ClusterTools } from '../MapTools/ClusterTools';
 import { HeatMapTools } from '../MapTools/HeatMapTools';
 import { MaskTools } from '../MapTools/MaskTools';
-import { WeatherTools } from '../MapTools/WeatherTools'
+import { WeatherTools } from '../MapTools/WeatherTools';
+import { TimeTools } from '../MapTools/TimeTools'
 
 const mapStore = useMapStore()
 const topicStore = useTopicLayerStore()
@@ -19,6 +20,8 @@ let heatMapTool = ref()
 let maskTool = ref()
 
 let weatherTool = ref()
+
+let timeTool = ref()
 
 const hideCard = () => {
     topicStore.setVisible(false)
@@ -53,6 +56,11 @@ const handleWeatherMap = () => {
     }
 }
 
+const handleTimeMap = () => {
+    if (!timeTool.value) {
+        timeTool.value = new TimeTools({ mapTool: mapStore.mapTool })
+    }
+}
 onMounted(() => {
 })
 
@@ -74,6 +82,7 @@ onMounted(() => {
                     <el-button type="primary" @click="handleHeatMap">热力图</el-button>
                     <el-button type="primary" @click="handleMaskMap">蒙版图</el-button>
                     <el-button type="primary" @click="handleWeatherMap">气象专题图</el-button>
+                    <el-button type="primary" @click="handleTimeMap">时间图</el-button>
                 </div>
             </div>
         </div>

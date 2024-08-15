@@ -26,7 +26,6 @@ function getTileLayer(url, visible) {
   return new TileLayer({
     source: new XYZ({
       url: url,
-      wrapX: false,
     }),
   });
 }
@@ -51,9 +50,9 @@ onMounted(() => {
     view: new View({
       center: olProj.fromLonLat([114.3005, 30.5928]),
       zoom: 5,
-      minZoom: 1,
+      minZoom: 0,
       maxZoom: 22,
-      extent: extent
+      // extent: extent
     }),
   });
 

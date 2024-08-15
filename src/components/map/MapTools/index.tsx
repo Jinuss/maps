@@ -43,7 +43,9 @@ export class MapTools {
     this.map.on("pointermove", (evt) => {
       var lonLat = transform(evt.coordinate, "EPSG:3857", "EPSG:4326");
       if (lonLat && lonLat.length && coordinateEl) {
-        coordinateEl.innerHTML = `经度: ${lonLat[0].toFixed(
+        var lon = ((((lonLat[0] + 180) % 360) + 360) % 360) - 180;
+        console.log("🚀 ~ MapTools ~ this.map.on ~ lonLat:", lonLat);
+        coordinateEl.innerHTML = `经度: ${lon.toFixed(
           3
         )}, 纬度: ${lonLat[1].toFixed(3)}`;
 

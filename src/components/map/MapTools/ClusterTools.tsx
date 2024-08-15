@@ -13,7 +13,6 @@ import { Cluster, Vector as VectorSource } from "ol/source";
 import { Vector as VectorLayer } from "ol/layer";
 import { MapTools } from "./index";
 import { convertToRGBA } from "../../../util";
-
 export class ClusterTools {
   mapTool: MapTools;
   map: Map;
