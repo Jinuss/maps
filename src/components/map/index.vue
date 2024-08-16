@@ -3,10 +3,12 @@ import { ref, onMounted } from "vue";
 import Map from "ol/Map";
 import View from "ol/View";
 import * as olProj from "ol/proj";
+import { Graticule } from "ol/layer";
 import VectorLayer from "ol/layer/Vector";
 import TileLayer from "ol/layer/Tile";
 import XYZ from "ol/source/XYZ";
 import VectorSource from "ol/source/Vector";
+import MVT from 'ol/format/MVT'
 import { FullScreen, defaults as defaultControls, ScaleLine } from "ol/control";
 import { AMAP_URL, GOOGLE_URL } from "../map/layer.js";
 import tlp from "./tlp.vue";
@@ -42,10 +44,12 @@ const emit = defineEmits(["setMap"]);
 let MapTool = null;
 
 onMounted(() => {
-  const layers = { AMAP_LAYER, GOOGLE_LAYER, vectorLayer };
-  const extent = olProj.get('EPSG:3857').getExtent()
+  // 创建一个矢量图层显示网格线
+  const gridLayer = new Graticule({ showLabels: true });
+  const layers = { AMAP_LAYER, GOOGLE_LAYER, vectorLayer, gridLayer };
+  const extent = olProj.get('EPSG:3857').getExtent();
   const map = new Map({
-    layers: [AMAP_LAYER, GOOGLE_LAYER, vectorLayer],
+    layers: [AMAP_LAYER, GOOGLE_LAYER, vectorLayer, gridLayer],
     target: "map",
     view: new View({
       center: olProj.fromLonLat([114.3005, 30.5928]),
