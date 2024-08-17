@@ -6,8 +6,15 @@ import * as olStyle from "ol/style";
 import Feature from "ol/Feature";
 import { Point } from "ol/geom";
 import Map from "../components/map/index.vue";
+import CesiumMap from "../components/cesium/CesiumMap.vue";
 import GithubIcon from "../baseComponent/GithubIcon.vue";
+import ModeChange from "../components/common/ModeChange.vue";
 import locImgSrc from "../assets/loc.png";
+import { useMapStore } from "../store";
+import { storeToRefs } from "pinia";
+
+const mapStore = useMapStore()
+const { mode } = storeToRefs(mapStore)
 
 const address = ref("");
 const tk = "d4c174e239a1201c45a38e3ceff9fe0c";
@@ -115,7 +122,9 @@ const remoteMethod = (query) => {
       </el-select>
     </div>
     <div class="map-container">
-      <Map @setMap="setMap" />
+      <ModeChange />
+      <Map @setMap="setMap" v-if="mode=='2D'" />
+      <CesiumMap v-else />
     </div>
   </div>
 </template>

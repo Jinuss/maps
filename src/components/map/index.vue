@@ -11,7 +11,7 @@ import VectorSource from "ol/source/Vector";
 import MVT from 'ol/format/MVT'
 import { FullScreen, defaults as defaultControls, ScaleLine } from "ol/control";
 import { AMAP_URL, GOOGLE_URL } from "../map/layer.js";
-import tlp from "./tlp.vue";
+import tlp from "./compass.vue";
 import trp from "./trp.vue";
 import card from "./card.vue";
 import clear from "./clear.vue";
