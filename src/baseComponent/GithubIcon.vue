@@ -2,10 +2,9 @@
 const githubLink="https://github.com/Jinuss/maps"
 </script>
 <template>
-    <a :href="githubLink" class="icss-github-corner"><i></i></a>
+    <a :href="githubLink" class="icss-github-corner" title="求个star"><i></i></a>
 </template>
 <style scoped>
-/* github corner */
 a.icss-github-corner,
 a.icss-github-corner-left {
     font-size: 2.5em;
