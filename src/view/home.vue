@@ -123,7 +123,7 @@ const remoteMethod = (query) => {
     </div>
     <div class="map-container">
       <ModeChange />
-      <Map @setMap="setMap" v-if="mode=='2D'" />
+      <Map @setMap="setMap" v-if="mode == '2D'" />
       <CesiumMap v-else />
     </div>
   </div>
