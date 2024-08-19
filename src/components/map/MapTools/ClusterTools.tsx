@@ -18,7 +18,7 @@ export class ClusterTools {
   map: Map;
   markers: Array<Feature> = [];
   markersLimitNum: number = 1000;
-  clusterslayer: VectorLayer;
+  clusterslayer!: VectorLayer;
   clusterSource: Cluster;
   constructor({
     mapTool,
@@ -56,7 +56,7 @@ export class ClusterTools {
       );
     }
   }
-  initCluster(temp) {
+  initCluster(temp: { temp: Array<Feature>[] }) {
     this.clusterSource = new Cluster({
       distance: 150,
       minDistance: 20,
@@ -65,7 +65,7 @@ export class ClusterTools {
       }),
     });
     this.markers = temp;
-    const styleCache = {};
+    const styleCache: object = {};
 
     this.clusterslayer = new VectorLayer({
       source: this.clusterSource,
@@ -107,5 +107,8 @@ export class ClusterTools {
     });
 
     this.map.addLayer(this.clusterslayer);
+  }
+  remove() {
+    this.map.removeLayer(this.clusterslayer);
   }
 }

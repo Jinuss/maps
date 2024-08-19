@@ -13,6 +13,8 @@ export class HeatMapTools {
   markers: Array<Feature> = [];
   markersLimitNum: number = 1000;
   idwSource: IDW;
+  idwLayer!: ImageLayer;
+  vecLayer!: VectorLayer;
   constructor({ mapTool }: { mapTool: MapTools; markersLimitNum: number }) {
     this.mapTool = mapTool;
     this.map = mapTool.map;
@@ -24,26 +26,25 @@ export class HeatMapTools {
       weight: "weightVal",
     });
 
-    this.map.addLayer(
-      new ImageLayer({
-        source: this.idwSource,
-        opacity: 0.5,
-      })
-    );
+    this.idwLayer = new ImageLayer({
+      source: this.idwSource,
+      opacity: 0.5,
+    });
 
-    this.map.addLayer(
-      new VectorLayer({
-        source: this.idwSource.getSource(),
-        style: function (f) {
-          return new Style({
-            text: new Text({
-              text: f.get("weightVal").toString(),
-              stroke: new Stroke({ color: [255, 255, 255, 128], width: 1.25 }),
-            }),
-          });
-        },
-      })
-    );
+    this.map.addLayer(this.idwLayer);
+    this.vecLayer = new VectorLayer({
+      source: this.idwSource.getSource(),
+      style: function (f) {
+        return new Style({
+          text: new Text({
+            text: f.get("weightVal").toString(),
+            stroke: new Stroke({ color: [255, 255, 255, 128], width: 1.25 }),
+          }),
+        });
+      },
+    });
+
+    this.map.addLayer(this.vecLayer);
   }
 
   addFeatures() {
@@ -60,5 +61,10 @@ export class HeatMapTools {
       features.push(f);
     }
     this.idwSource.getSource().addFeatures(features);
+  }
+
+  remove() {
+    this.map.removeLayer(this.vecLayer);
+    this.map.removeLayer(this.idwLayer);
   }
 }

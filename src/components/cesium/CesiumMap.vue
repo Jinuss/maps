@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script setup>
 import { ref, onMounted } from "vue";
 import { CESIUM_VIEWER_OPTIONS, ACCESS_TOKEN } from "../../const/const.cesium";
 
@@ -13,7 +13,9 @@ onMounted(
     });
 
     viewer.cesiumWidget.creditContainer.style.display = "none";
-
+    viewer.camera.setView({
+      destination: Cesium.Cartesian3.fromDegrees(104.1954, 35.8617, 40000000) // 中国中心坐标和缩放级别
+    });
     Viewer.value = viewer;
   });
 </script>

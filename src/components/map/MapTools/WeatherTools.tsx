@@ -9,6 +9,7 @@ import { MapTools } from "./index";
 export class WeatherTools {
   mapTool: MapTools;
   map: Map;
+  cloud: AnimatedCanvas;
   constructor({ mapTool }: { mapTool: MapTools }) {
     this.mapTool = mapTool;
     this.map = mapTool.map;
@@ -19,13 +20,13 @@ export class WeatherTools {
     this.mapTool.layers.GOOGLE_LAYER.setVisible(true);
 
     // cloud
-    var cloud = new AnimatedCanvas({
+    this.cloud = new AnimatedCanvas({
       particule: Cloud,
       density: 1.5,
       angle: Math.PI / 4,
       speed: 2,
     });
-    this.map.addOverlay(cloud);
+    this.map.addOverlay(this.cloud);
 
     //snow
     var snow = new AnimatedCanvas({
@@ -56,5 +57,10 @@ export class WeatherTools {
     });
     rain.setVisible(false);
     this.map.addOverlay(rain);
+  }
+  remove() {
+    this.map.removeOverlay(this.cloud);
+    this.mapTool.layers.AMAP_LAYER.setVisible(true);
+    this.mapTool.layers.GOOGLE_LAYER.setVisible(false);
   }
 }

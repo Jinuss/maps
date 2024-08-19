@@ -9,14 +9,14 @@ import geojson from "../assets/hongshang.json";
 export class MaskTools {
   mapTool: MapTools;
   map: Map;
+  mask: Mask;
+  crop: Crop;
   constructor({ mapTool }: { mapTool: MapTools }) {
     this.mapTool = mapTool;
     this.map = mapTool.map;
     this.initMaskMAp();
   }
   initMaskMAp() {
-    console.log("🚀 ~ features:", geojson);
-
     var f = new GeoJSON().readFeature(geojson.features[0]);
     const transformedCoords = f
       .getGeometry()
@@ -39,19 +39,25 @@ export class MaskTools {
     // 更新 Feature 的坐标
     f.getGeometry().setCoordinates(transformedCoords);
 
-    var mask = new Mask({
+    this.mask = new Mask({
       feature: f,
       wrapX: true,
       inner: false,
       fill: new Fill({ color: [255, 255, 255, 0.1] }),
     });
-    var crop = new Crop({
+    this.crop = new Crop({
       feature: f,
       wrapX: true,
       inner: false,
     });
 
-    this.mapTool.layers.AMAP_LAYER.addFilter(mask);
-    this.mapTool.layers.AMAP_LAYER.addFilter(crop);
+    this.mapTool.layers.AMAP_LAYER.addFilter(this.mask);
+    this.mapTool.layers.AMAP_LAYER.addFilter(this.crop);
+    this.map.getView().setZoom(11);
+  }
+  remove() {
+    this.mapTool.layers.AMAP_LAYER.removeFilter(this.mask);
+    this.mapTool.layers.AMAP_LAYER.removeFilter(this.crop);
+    this.map.getView().setZoom(5);
   }
 }
