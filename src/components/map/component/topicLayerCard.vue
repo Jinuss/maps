@@ -12,6 +12,7 @@ import heatMapImage from "../assets/heatMap.jpg";
 import maskImage from "../assets/mask.jpg";
 import weatherImage from "../assets/weather.jpg";
 import timeImage from "../assets/time.jpg";
+import setting from "./setting.vue";
 
 const mapStore = useMapStore();
 const topicStore = useTopicLayerStore();
@@ -100,6 +101,11 @@ const MAP_THEMES = [
     src: timeImage,
   },
 ];
+const showSetting = ref(false);
+
+const handleClickSet = () => {
+  showSetting.value = !showSetting.value;
+};
 
 const activeType = ref("");
 
@@ -163,7 +169,7 @@ const resetMap = () => {
     </div>
     <div class="card_body">
       <div class="container">
-        <div class="topic_list">
+        <div class="topic_list" v-if="!showSetting">
           <el-card
             :class="
               activeType == topic.type ? 'topic_card active' : 'topic_card'
@@ -175,7 +181,9 @@ const resetMap = () => {
             <template #header>
               <div class="card-topic-header">
                 <span>{{ topic.name }}</span>
-                <el-icon :size="18"><Setting /></el-icon>
+                <el-icon :size="18" @click="handleClickSet">
+                  <Setting />
+                </el-icon>
               </div>
             </template>
             <template #default>
@@ -184,6 +192,9 @@ const resetMap = () => {
               </div>
             </template>
           </el-card>
+        </div>
+        <div>
+          <setting />
         </div>
       </div>
     </div>
