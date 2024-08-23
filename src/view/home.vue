@@ -13,8 +13,8 @@ import locImgSrc from "../assets/loc.png";
 import { useMapStore } from "../store";
 import { storeToRefs } from "pinia";
 
-const mapStore = useMapStore()
-const { mode } = storeToRefs(mapStore)
+const mapStore = useMapStore();
+const { mode } = storeToRefs(mapStore);
 
 const address = ref("");
 const tk = "d4c174e239a1201c45a38e3ceff9fe0c";
@@ -109,8 +109,15 @@ const remoteMethod = (query) => {
 </el-input>
 </el-form-item> -->
 
-      <el-select v-model="kw" filterable remote reserve-keyword placeholder="搜索位置" :remote-method="remoteMethod"
-        style="width: 240px">
+      <el-select
+        v-model="kw"
+        filterable
+        remote
+        reserve-keyword
+        placeholder="搜索位置"
+        :remote-method="remoteMethod"
+        style="width: 240px"
+      >
         <template v-for="item in options" :key="item.gbCode">
           <el-option :label="item.address" :value="item.gbCode">
             <span style="">{{ item.name }}</span>
