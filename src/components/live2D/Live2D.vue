@@ -61,12 +61,12 @@
 
 <script setup>
 import { onMounted, nextTick, ref, computed } from "vue";
-import commentsrc from "./imgs/comment.svg"
-import usersrc from './imgs/user.svg'
-import deletesrc from './imgs/delete.svg'
-import infosrc from './imgs/info.svg'
-import camerasrc from './imgs/camera.svg'
-import streetsrc from './imgs/street.svg'
+import commentsrc from "./imgs/comment.svg";
+import usersrc from "./imgs/user.svg";
+import deletesrc from "./imgs/delete.svg";
+import infosrc from "./imgs/info.svg";
+import camerasrc from "./imgs/camera.svg";
+import streetsrc from "./imgs/street.svg";
 
 import tips from "./options/tips";
 
