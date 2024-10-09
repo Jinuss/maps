@@ -1,5 +1,6 @@
 <script setup>
 import { ref, reactive } from "vue";
+import live from "../components/live2D/Live2D.vue";
 import { Search } from "@element-plus/icons-vue";
 import { fromLonLat } from "ol/proj";
 import * as olStyle from "ol/style";
@@ -133,6 +134,7 @@ const remoteMethod = (query) => {
       <Map @setMap="setMap" v-if="mode == '2D'" />
       <CesiumMap v-else />
     </div>
+    <live :size="350" :width="350" :height="500"></live>
   </div>
 </template>
 <style scoped>
