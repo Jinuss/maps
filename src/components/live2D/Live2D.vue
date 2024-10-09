@@ -10,7 +10,7 @@
       height: `300px`,
       position: 'absolute',
       left: '10px',
-      bottom: '20px',
+      bottom: '40px',
     }"
     @mouseover="openLive2dTool"
     @mouseout="closeLive2dTool"
