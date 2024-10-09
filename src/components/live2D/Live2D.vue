@@ -9,8 +9,8 @@
       width: `300px`,
       height: `300px`,
       position: 'absolute',
-      left: 10,
-      bottom: 20,
+      left: '10px',
+      bottom: '20px',
     }"
     @mouseover="openLive2dTool"
     @mouseout="closeLive2dTool"
@@ -64,7 +64,8 @@ import { onMounted, nextTick, ref, computed } from "vue";
 
 import tips from "./options/tips";
 
-const model = ["Potion-Maker/Pio", "school-2017-costume-yellow"];
+// const model = ["Potion-Maker/Pio", "school-2017-costume-yellow"];
+const model=["ShizukuTalk/shizuku-48","default"]
 
 const apiPath = "https://evgo2017.com/api/live2d-static-api/indexes";
 
