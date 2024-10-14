@@ -74,3 +74,26 @@ export const INIT_CIRCLE_STATE = {
   width: 2,
   opacity: 30,
 };
+
+export const SCALEPLATE_LIST = [
+  {
+    t: "度",
+    v: "degrees",
+  },
+  {
+    t: "英制英尺",
+    v: "imperial",
+  },
+  {
+    t: "美制英尺",
+    v: "us",
+  },
+  {
+    t: "海里",
+    v: "nautical",
+  },
+  {
+    t: "公制",
+    v: "metric",
+  },
+];

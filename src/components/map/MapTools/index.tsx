@@ -123,6 +123,7 @@ export class MapTools {
       positioning: "bottom-center",
       offset: [15, -30],
       position: coordinate,
+      autoPan: true, // 如果弹窗在底图边缘时，底图会移动
     });
 
     this.map.addOverlay(overlay);

@@ -8,15 +8,20 @@ import VectorLayer from "ol/layer/Vector";
 import TileLayer from "ol/layer/Tile";
 import XYZ from "ol/source/XYZ";
 import VectorSource from "ol/source/Vector";
-import MVT from 'ol/format/MVT'
-import { FullScreen, defaults as defaultControls, ScaleLine } from "ol/control";
+import MVT from "ol/format/MVT";
+import {
+  FullScreen,
+  defaults as defaultControls,
+  ScaleLine,
+  ZoomToExtent,
+} from "ol/control";
 import { AMAP_URL, GOOGLE_URL } from "../map/layer.js";
 import tlp from "./compass.vue";
 import trp from "./trp.vue";
 import card from "./card.vue";
 import clear from "./clear.vue";
 import brp from "./brp.vue";
-import topicLayerCard from './component/topicLayerCard.vue'
+import topicLayerCard from "./component/topicLayerCard.vue";
 import "ol/ol.css";
 import "./style.css";
 import { MapTools } from "./MapTools/index.tsx";
@@ -47,7 +52,6 @@ onMounted(() => {
   // 创建一个矢量图层显示网格线
   const gridLayer = new Graticule({ showLabels: true });
   const layers = { AMAP_LAYER, GOOGLE_LAYER, vectorLayer, gridLayer };
-  const extent = olProj.get('EPSG:3857').getExtent();
   const map = new Map({
     layers: [AMAP_LAYER, GOOGLE_LAYER, vectorLayer, gridLayer],
     target: "map",
@@ -56,12 +60,22 @@ onMounted(() => {
       zoom: 5,
       minZoom: 0,
       maxZoom: 22,
-      // extent: extent
     }),
   });
 
+  console.log(map.getView().getViewStateAndExtent());
+
   map.addControl(new FullScreen());
   map.addControl(new ScaleLine());
+  map.addControl(
+    new ZoomToExtent({
+      extent: [
+        10062641.88063987, 1498445.467101972, 15385105.034193262,
+        5661511.775625812,
+      ],
+    })
+  );
+
   const callback = ({ operate, type, uuid, ...rest }) => {
     if (operate == "add") {
       cardStore.addData({ type, uuid, ...rest });

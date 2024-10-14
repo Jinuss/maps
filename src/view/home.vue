@@ -11,6 +11,7 @@ import CesiumMap from "../components/cesium/CesiumMap.vue";
 import GithubIcon from "../baseComponent/GithubIcon.vue";
 import ModeChange from "../components/common/ModeChange.vue";
 import locImgSrc from "../assets/loc.png";
+import IndexModal from "../components/Modals/index.vue";
 import { useMapStore } from "../store";
 import { storeToRefs } from "pinia";
 
@@ -135,6 +136,7 @@ const remoteMethod = (query) => {
       <CesiumMap v-else />
     </div>
     <live :size="350" :width="350" :height="500"></live>
+    <IndexModal />
   </div>
 </template>
 <style scoped>
