@@ -39,6 +39,7 @@ const handleCompleteCallback = ({ operate, type, uuid, ...rest }) => {
     }
 }
 const handleClickType = (type) => {
+    console.log("🚀 ~ handleClickType ~ type:", type)
     if (TYPES[type.toUpperCase()]) {
         setVisible(false)
         if (MapTool.value) {

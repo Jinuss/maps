@@ -21,12 +21,12 @@ const openSettingModal = () => {
       <el-tooltip
         class="box-item"
         effect="dark"
-        content="设置"
+        content="其它"
         placement="left"
         :offset="20"
       >
         <span role="img" class="anticon">
-          <img src="./assets/setting.png" alt="" />
+          <img src="../../assets/modal.png" alt="" />
         </span>
       </el-tooltip>
     </li>

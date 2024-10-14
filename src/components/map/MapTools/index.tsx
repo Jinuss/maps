@@ -98,10 +98,10 @@ export class MapTools {
       case TYPES.RECT:
         that.initInteractionBase(type);
         break;
-      case "measure-distance":
+      case TYPES.MEASUREDISTANCE:
         that.initInteraction();
         break;
-      case "measure-polygon":
+      case TYPES.MEASUREPOLYGON:
         that.initInteractionPolygon();
         break;
       case "clear":
