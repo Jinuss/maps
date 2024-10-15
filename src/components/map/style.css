@@ -4,3 +4,11 @@
 .ol-viewport.draw canvas {
   cursor: crosshair;
 }
+
+.ol-zoomslider{
+  top:7em;
+}
+.ol-overviewmap {
+  bottom: unset !important;
+  top: 320px;
+}

@@ -5,15 +5,18 @@ import View from "ol/View";
 import * as olProj from "ol/proj";
 import { Graticule } from "ol/layer";
 import VectorLayer from "ol/layer/Vector";
+import OSM from "ol/source/OSM.js";
 import TileLayer from "ol/layer/Tile";
 import XYZ from "ol/source/XYZ";
 import VectorSource from "ol/source/Vector";
 import MVT from "ol/format/MVT";
 import {
+  ZoomSlider,
   FullScreen,
   defaults as defaultControls,
   ScaleLine,
   ZoomToExtent,
+  OverviewMap,
 } from "ol/control";
 import { AMAP_URL, GOOGLE_URL } from "../map/layer.js";
 import tlp from "./compass.vue";
@@ -52,8 +55,19 @@ onMounted(() => {
   // 创建一个矢量图层显示网格线
   const gridLayer = new Graticule({ showLabels: true });
   const layers = { AMAP_LAYER, GOOGLE_LAYER, vectorLayer, gridLayer };
+
+  const source = new OSM();
+  const overviewMapControl = new OverviewMap({
+    layers: [
+      new TileLayer({
+        source: source,
+      }),
+    ],
+  });
+
   const map = new Map({
     layers: [AMAP_LAYER, GOOGLE_LAYER, vectorLayer, gridLayer],
+    controls: defaultControls().extend([overviewMapControl,new ZoomSlider()]),
     target: "map",
     view: new View({
       center: olProj.fromLonLat([114.3005, 30.5928]),
