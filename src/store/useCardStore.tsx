@@ -29,6 +29,7 @@ export const useCardStore = defineStore("cardStore", {
           break;
         case TYPES.CIRCLE:
           p.formData = INIT_CIRCLE_STATE;
+          break;
         default:
       }
       this.list.push({ ...p });

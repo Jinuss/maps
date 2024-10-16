@@ -11,6 +11,7 @@ import clusterImage from "../assets/cluster.png";
 import heatMapImage from "../assets/heatMap.jpg";
 import maskImage from "../assets/mask.jpg";
 import weatherImage from "../assets/weather.jpg";
+import vectorImage from "../assets/vector.png";
 import timeImage from "../assets/time.jpg";
 import setting from "./setting.vue";
 
@@ -67,6 +68,7 @@ const handleTimeMap = () => {
     timeTool.value = new TimeTools({ mapTool: mapStore.mapTool });
   }
 };
+
 onMounted(() => {});
 
 const MAP_THEMES = [
@@ -99,6 +101,12 @@ const MAP_THEMES = [
     type: "timeMap",
     callback: handleTimeMap,
     src: timeImage,
+  },
+  {
+    name: "矢量图高亮",
+    type: "timeMap",
+    callback: handleTimeMap,
+    src: vectorImage,
   },
 ];
 const showSetting = ref(false);
@@ -194,7 +202,7 @@ const resetMap = () => {
           </el-card>
         </div>
         <div>
-          <setting />
+          <!-- <setting /> -->
         </div>
       </div>
     </div>

@@ -5,3 +5,5 @@ export * from "./useMapStore.tsx";
 export * from "./useTopicLayerStore.tsx";
 
 export * from "./useModalStore.tsx";
+
+export * from './useModalMap.tsx'
