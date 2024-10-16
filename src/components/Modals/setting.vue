@@ -5,9 +5,7 @@ import { ElMessage } from "element-plus";
 import { SCALEPLATE_LIST } from "../../const/const.map";
 import { MODAL_NULL } from "../../const/const.modals";
 import { ScaleLine } from "ol/control";
-import Tile from "ol/layer/Tile";
-import XYZ from "ol/source/XYZ.js";
-import { fromLonLat, transformExtent } from "ol/proj";
+import { fromLonLat } from "ol/proj";
 import { useModalStore, useMapStore } from "../../store";
 
 const mapStore = useMapStore();
@@ -39,71 +37,6 @@ const loading = ref(false);
 const confirmModal = async () => {
   modalStore.setModalType(MODAL_NULL);
 };
-// 创建canvas
-const createCanvasContext2D = (opt_width, opt_height) => {
-  const canvas = document.createElement("canvas");
-  if (opt_width) {
-    canvas.width = opt_width;
-  }
-  if (opt_height) {
-    canvas.height = opt_height;
-  }
-  return canvas.getContext("2d");
-};
-
-const getSource = () => {
-  return new XYZ({
-    tileUrlFunction: (t) => {
-      var tileSize = [512, 512];
-      const half = tileSize[0] / 2;
-      var tileSize = [512, 512];
-
-      const context = createCanvasContext2D(tileSize[0], tileSize[0]);
-
-      context.fillStyle = "rgba(184, 184, 184, 0.8)";
-
-      context.textAlign = "center";
-      context.textBaseline = "middle";
-
-      context.font = "32px microsoft yahei";
-
-      context.rotate((Math.PI / 180) * 30);
-
-      context.fillText(waterMarkText.value, half, half);
-
-      return context.canvas.toDataURL();
-    },
-    extent: transformExtent([-180, -85, 180, 85], "EPSG:4326", "EPSG:3857"),
-  });
-};
-//水印瓦片图层
-const getWaterMarkLayer = () => {
-  let tiles = new Tile({
-    source: getSource(),
-    className: "water_marker",
-  });
-  return tiles;
-};
-
-const handleWaterMark = (text) => {
-  waterMarkText.value = text;
-  const map = mapTool.value.map;
-  let layer = map
-    .getLayers()
-    .getArray()
-    .find((i) => i.getClassName() == "water_marker");
-  if (layer) {
-    map.removeLayer(layer);
-  }
-
-  layer = getWaterMarkLayer();
-  map.addLayer(layer);
-};
-const waterMarkText = ref("");
-
-onMounted(() => {
-  handleWaterMark("openlayers");
-});
 </script>
 <template>
   <el-dialog
@@ -131,15 +64,6 @@ onMounted(() => {
             </template>
           </el-select>
         </div>
-      </div>
-      <div class="item">
-        <span>添加水印</span>
-        <el-input
-          v-model="waterMarkText"
-          placeholder="请输入水印文字"
-          @change="handleWaterMark"
-          style="width: 80%"
-        ></el-input>
       </div>
     </div>
   </el-dialog>

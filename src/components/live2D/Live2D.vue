@@ -16,7 +16,7 @@
     @mouseout="closeLive2dTool"
   >
     <div
-      v-show="true"
+      v-show="tipShow"
       v-html="data.tipText"
       :class="{
         'vue-live2d-tip': true,
@@ -51,10 +51,9 @@
       :class="{
         'vue-live2d-toggle': true,
         'vue-live2d-toggle-on-left': true,
-        // 'vue-live2d-toggle-on-right': direction === 'right',
       }"
     >
-      <span>Kanban girl</span>
+      <span>girl</span>
     </div>
   </div>
 </template>
@@ -242,7 +241,7 @@ defineProps({
 });
 
 const tipShow = computed(() => {
-  return mainShow && data.value.containerDisplay.tip;
+  return data.value.containerDisplay.main && data.value.containerDisplay.tip;
 });
 
 const mainShow = computed(() => {
@@ -250,11 +249,11 @@ const mainShow = computed(() => {
 });
 
 const toolShow = computed(() => {
-  return mainShow && data.value.containerDisplay.tool;
+  return data.value.containerDisplay.main && data.value.containerDisplay.tool;
 });
 
 const toggleShow = computed(() => {
-  return !mainShow;
+  return !data.value.containerDisplay.main;
 });
 
 const tools = ref([

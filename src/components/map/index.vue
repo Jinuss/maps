@@ -25,6 +25,7 @@ import card from "./card.vue";
 import clear from "./clear.vue";
 import brp from "./brp.vue";
 import topicLayerCard from "./component/topicLayerCard.vue";
+import dragPanel from "./dragPanel/index.vue";
 import "ol/ol.css";
 import "./style.css";
 import { MapTools } from "./MapTools/index.tsx";
@@ -52,9 +53,7 @@ const emit = defineEmits(["setMap"]);
 let MapTool = null;
 
 onMounted(() => {
-  // 创建一个矢量图层显示网格线
-  const gridLayer = new Graticule({ showLabels: true });
-  const layers = { AMAP_LAYER, GOOGLE_LAYER, vectorLayer, gridLayer };
+  const layers = { AMAP_LAYER, GOOGLE_LAYER, vectorLayer };
 
   const source = new OSM();
   const overviewMapControl = new OverviewMap({
@@ -66,8 +65,8 @@ onMounted(() => {
   });
 
   const map = new Map({
-    layers: [AMAP_LAYER, GOOGLE_LAYER, vectorLayer, gridLayer],
-    controls: defaultControls().extend([overviewMapControl,new ZoomSlider()]),
+    layers: [AMAP_LAYER, GOOGLE_LAYER, vectorLayer],
+    controls: defaultControls().extend([overviewMapControl, new ZoomSlider()]),
     target: "map",
     view: new View({
       center: olProj.fromLonLat([114.3005, 30.5928]),
@@ -111,6 +110,7 @@ onMounted(() => {
     <card />
     <brp />
     <topicLayerCard />
+    <dragPanel />
   </div>
 </template>
 <style scoped>
