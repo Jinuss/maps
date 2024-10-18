@@ -177,8 +177,9 @@ export class MapTools {
         source: this.layers.vectorLayer.getSource(),
         type: "Circle",
         style: this.style2,
+        freehand: true,
         geometryFunction:
-          type === TYPES.CIRCLE ? createRegularPolygon(400) : createBox(),
+          type === TYPES.CIRCLE ? createRegularPolygon(12) : createBox(),
       });
     } else {
       this.draw = new Draw({
