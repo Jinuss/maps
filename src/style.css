@@ -92,3 +92,15 @@ body {
 .ol-tooltip-static:before {
   border-top-color: #20ba11;
 }
+
+.popMarker_path_route_points {
+  color: #fff;
+  font-size: 27px;
+  font-weight: 700;
+  background-color: rgba(0, 0, 0, 0.7);
+  border-radius: 12px;
+  text-align: center;
+  line-height: 45px;
+  height: 45px;
+  width: 45px;
+}
