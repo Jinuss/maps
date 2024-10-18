@@ -21,12 +21,21 @@ const openSettingModal = () => {
       <el-tooltip
         class="box-item"
         effect="dark"
-        content="其它"
+        content="设置"
         placement="left"
         :offset="20"
       >
         <span role="img" class="anticon">
-          <img src="../../assets/modal.png" alt="" />
+          <svg
+            width="1em"
+            height="1em"
+            fill="currentColor"
+            aria-hidden="true"
+            focusable="false"
+            class=""
+          >
+            <use xlink:href="#icon-set-up"></use>
+          </svg>
         </span>
       </el-tooltip>
     </li>
@@ -61,7 +70,7 @@ ul {
   box-shadow: 0 0 4px 2px #b1b1b180;
   position: absolute;
   right: 10px;
-  top: 405px;
+  top: 450px;
   z-index: 5;
 }
 

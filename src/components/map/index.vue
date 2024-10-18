@@ -18,6 +18,7 @@ import {
   ZoomToExtent,
   OverviewMap,
 } from "ol/control";
+import { storeToRefs } from "pinia";
 import { AMAP_URL, GOOGLE_URL } from "../map/layer.js";
 import tlp from "./compass.vue";
 import trp from "./trp.vue";
@@ -26,13 +27,19 @@ import clear from "./clear.vue";
 import brp from "./brp.vue";
 import topicLayerCard from "./component/topicLayerCard.vue";
 import dragPanel from "./dragPanel/index.vue";
+import routePlan from "./component/routePlan.vue";
 import "ol/ol.css";
 import "./style.css";
 import { MapTools } from "./MapTools/index.tsx";
-import { useMapStore, useCardStore } from "../../store";
+import { useMapStore, useCardStore, usePanelStore } from "../../store";
+import { PANEL_TYPES } from "../../const/const.panel.tsx";
 
 const cardStore = useCardStore();
 const MapStore = useMapStore();
+const PanelStore = usePanelStore();
+
+const { type } = storeToRefs(PanelStore);
+
 function getTileLayer(url, visible) {
   return new TileLayer({
     source: new XYZ({
@@ -111,6 +118,7 @@ onMounted(() => {
     <brp />
     <topicLayerCard />
     <dragPanel />
+    <routePlan v-if="type == PANEL_TYPES.ROUTE_PLAN" />
   </div>
 </template>
 <style scoped>
