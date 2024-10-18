@@ -80,11 +80,16 @@ const getPointsStyle = () => {
 
 let draw = null;
 
-const drawStart = () => {
+const exitDraw = () => {
   if (draw) {
     mapInstance.removeInteraction(draw);
     draw = null;
+    mapInstance.getTargetElement().style.cursor = "";
   }
+};
+const drawStart = () => {
+  exitDraw();
+
   draw = new Draw({
     source: vectorLayer.getSource(),
     type: "Point",
@@ -95,7 +100,6 @@ const drawStart = () => {
 
   draw.on("drawend", function (event) {
     const feature = event.feature;
-    // feature.setGeometry(new Point(event.coordinate))
     console.log(feature.getGeometry().getCoordinates(), event);
     if (activeIndex.value == listChildren[0].value) {
       //起点
@@ -108,7 +112,10 @@ const drawStart = () => {
       //途径点
       PointFeature.value.route_points.push(feature);
       const coordinates = feature.getGeometry().getCoordinates();
-      addOverlay(coordinates, PointFeature.value.route_points.length);
+      addOverlay({
+        coordinates,
+        index: PointFeature.value.route_points.length,
+      });
     } else {
       //终点
       if (PointFeature.value.end_point) {
@@ -129,52 +136,113 @@ const createElement = (index) => {
   return element;
 };
 
-const addOverlay = (coordinates, index) => {
+let overlays = [];
+const popup = ref();
+const addOverlay = ({ coordinates, index, type = "point" }) => {
   const overlay = new Overlay({
-    element: createElement(index),
+    element: type == "point" ? createElement(index) : popup.value,
     positioning: "bottom-center",
-    offset: [0, 70],
+    offset: type == "point" ? [0, 70] : [200, 70],
     position: coordinates,
   });
 
   mapInstance.addOverlay(overlay);
+
+  overlays.push(overlay);
 };
 onMounted(() => {
   mapInstance.addLayer(vectorLayer);
 });
 
-const confirmHandle = () => {
-  let path = [];
+const PathResult = ref([]);
+
+const drawLine = () => {
+  PathResult.value = [];
 
   //起点
-  path.push(PointFeature.value.start_point.getGeometry().getCoordinates());
+  PathResult.value.push(
+    PointFeature.value.start_point.getGeometry().getCoordinates()
+  );
 
   //途径点
   PointFeature.value.route_points.forEach((feature) => {
-    path.push(feature.getGeometry().getCoordinates());
+    PathResult.value.push(feature.getGeometry().getCoordinates());
   });
 
   //终点
-  path.push(PointFeature.value.end_point.getGeometry().getCoordinates());
-
-  console.log("🚀 ~ confirmHandle ~ path:", path);
+  PathResult.value.push(
+    PointFeature.value.end_point.getGeometry().getCoordinates()
+  );
 
   const lineFeature = new Feature({
-    geometry: new LineString(path),
+    geometry: new LineString(PathResult.value),
   });
 
-  // 创建线样式
   const lineStyle = new Style({
     stroke: new Stroke({
-      color: "blue", // 线的颜色
-      width: 4, // 线的宽度
+      color: "blue",
+      width: 4,
     }),
   });
 
-  // 设置线样式
   lineFeature.setStyle(lineStyle);
 
   vectorLayer.getSource().addFeature(lineFeature);
+};
+
+const form = ref({
+  name: "",
+  mark: "",
+});
+
+const confirmHandle = () => {
+  if (!btnState.value) {
+    return;
+  }
+  drawLine();
+
+  exitDraw();
+
+  activeIndex.value = "";
+
+  addPanel();
+};
+
+const addPanel = () => {
+  let maxRightPoint = [0, 0];
+  [...PathResult.value].forEach((point) => {
+    if (point[0] > maxRightPoint[0]) {
+      maxRightPoint = point;
+    }
+  });
+
+  addOverlay({ coordinates: maxRightPoint, type: "panel" });
+};
+
+const cancelHandle = () => {
+  exitDraw();
+
+  activeIndex.value = "";
+
+  vectorLayer.getSource().clear();
+
+  overlays.forEach((overlay) => {
+    mapInstance.removeOverlay(overlay);
+  });
+
+  PointFeature.value = {
+    start_point: null,
+    route_points: [],
+    end_point: null,
+  };
+};
+
+const popupCancelHandle = () => {
+  cancelHandle();
+};
+
+const popupConfirmHandle = () => {
+  confirmHandle();
 };
 </script>
 <template>
@@ -189,8 +257,38 @@ const confirmHandle = () => {
     </div>
   </div>
   <div class="path_footer" v-show="activeIndex">
-    <div>取消</div>
-    <div :class="{ active: btnState }" @click="confirmHandle">完成</div>
+    <div @click="cancelHandle">取消</div>
+    <div :class="{ active: btnState }" @click="() => confirmHandle()">完成</div>
+  </div>
+
+  <div
+    class="point_route_popup"
+    ref="popup"
+    v-show="PathResult && PathResult.length"
+  >
+    <p class="head">路线</p>
+    <div>
+      <div class="item">
+        <div>名称</div>
+        <el-input
+          v-model="form.name"
+          style="width: 240px"
+          placeholder="输入路径名称"
+        />
+      </div>
+      <div class="item">
+        <div>备注</div>
+        <el-input
+          v-model="form.mark"
+          style="width: 240px"
+          placeholder="输入路线附加信息"
+        />
+      </div>
+    </div>
+    <div class="footer">
+      <div @click="popupCancelHandle">取消</div>
+      <div @click="popupConfirmHandle">确认</div>
+    </div>
   </div>
 </template>
 <style scoped>
@@ -199,7 +297,8 @@ const confirmHandle = () => {
   top: 60px;
   height: 120px;
   width: 104px;
-  left: 30px;
+  left: 40px;
+  top: 64px;
   background: rgb(242, 242, 242);
   border-radius: 5px;
   box-shadow: 0 0 2 rgba(0, 0, 0, 0.5);
@@ -211,36 +310,34 @@ const confirmHandle = () => {
   font-weight: 700;
   color: rgb(51, 51, 51);
   z-index: 5;
-  top: 65px;
-}
 
-.item {
-  width: 100%;
-  text-align: center;
-  line-height: 40px;
-  height: 40px;
-  cursor: pointer;
-}
+  .item {
+    width: 100%;
+    text-align: center;
+    line-height: 40px;
+    height: 40px;
+    cursor: pointer;
+  }
 
-.item.active,
-.item:hover {
-  background-color: rgb(72, 105, 99);
-}
+  .item.active,
+  .item:hover {
+    background-color: rgb(72, 105, 99);
+  }
 
-.item:nth-child(1).active,
-.item:nth-child(1):hover {
-  border-radius: 5px 5px 0 0;
-}
+  .item:nth-child(1).active,
+  .item:nth-child(1):hover {
+    border-radius: 5px 5px 0 0;
+  }
 
-.item:nth-child(2) {
-  margin: 2px 0;
-}
+  .item:nth-child(2) {
+    margin: 2px 0;
+  }
 
-.item:nth-child(3).active,
-.item:nth-child(3):hover {
-  border-radius: 0px 0px 5px 5px;
+  .item:nth-child(3).active,
+  .item:nth-child(3):hover {
+    border-radius: 0px 0px 5px 5px;
+  }
 }
-
 .path_footer {
   position: absolute;
   width: 300px;
@@ -252,7 +349,6 @@ const confirmHandle = () => {
   align-items: center;
   z-index: 5;
 }
-
 .path_footer > div {
   width: 120px;
   height: 60px;
@@ -282,5 +378,58 @@ const confirmHandle = () => {
 .path_footer div.active {
   background-color: rgb(76, 112, 105);
   cursor: pointer;
+}
+
+.point_route_popup {
+  height: 170px;
+  width: 334px;
+  background-color: rgb(242, 242, 242);
+  border-radius: 4px;
+  box-shadow: 0 0 2px rgba(0, 0, 0, 0.5);
+
+  p.head {
+    color: rgb(51, 51, 51);
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 20px;
+    text-align: center;
+    padding: 8.5px 0 10.5px;
+  }
+
+  div.item {
+    display: flex;
+    align-items: center;
+    padding: 0 10px 10px;
+    justify-content: space-around;
+  }
+
+  div.footer {
+    display: flex;
+    border-top: 1px solid rgba(0, 0, 0, 0.3);
+    align-items: center;
+    height: calc(100% - 84px - 39px);
+  }
+
+  div.footer div {
+    flex: 1;
+    text-align: center;
+    cursor: pointer;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 20px;
+    color: rgb(51, 51, 51);
+  }
+
+  div.footer div:first-child {
+    border-right: 1px solid rgba(0, 0, 0, 0.3);
+  }
+
+  div.footer div:last-child {
+    color: rgb(74, 171, 102);
+  }
 }
 </style>
