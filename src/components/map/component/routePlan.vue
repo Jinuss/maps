@@ -9,12 +9,19 @@ import { LineString, Point } from "ol/geom";
 import Overlay from "ol/Overlay";
 import { Style, Icon, Stroke, Fill, Circle } from "ol/style";
 import selectPointImg from "../assets/pointIng.png";
-import { useMapStore } from "../../../store";
+import { useMapStore, usePanelStore } from "../../../store";
+import { PANEL_TYPES } from "../../../const";
+import endImg from "../assets/end.svg";
+import startImg from "../assets/start.svg";
+import rightImg from "../../../assets/right.png";
+import { getStyleFunction } from "../../../util";
 
 const vectorLayer = new VectorLayer({
   source: new VectorSource(),
   className: "vector-layer",
 });
+
+const panelStore = usePanelStore();
 
 const mapStore = useMapStore();
 
@@ -47,6 +54,16 @@ const listChildren = [
 const changeActiveIndex = (index) => {
   activeIndex.value = index;
   drawStart();
+};
+
+const getEndpointStyle = (endType) => {
+  return new Style({
+    image: new Icon({
+      anchor: [0.5, 1],
+      src: endType == "end" ? endImg : startImg,
+      scale: 0.6,
+    }),
+  });
 };
 
 const styles = {
@@ -178,16 +195,19 @@ const drawLine = () => {
     geometry: new LineString(PathResult.value),
   });
 
-  const lineStyle = new Style({
-    stroke: new Stroke({
-      color: "blue",
-      width: 4,
-    }),
+  const lineStyle = getStyleFunction({
+    color: "#25C2F2",
+    width: 4,
+    imgsrc: rightImg,
+    wrapperRotation: (r) => -r,
   });
 
   lineFeature.setStyle(lineStyle);
 
   vectorLayer.getSource().addFeature(lineFeature);
+
+  PointFeature.value.start_point.setStyle(getEndpointStyle("start"));
+  PointFeature.value.end_point.setStyle(getEndpointStyle("end"));
 };
 
 const form = ref({
@@ -235,6 +255,8 @@ const cancelHandle = () => {
     route_points: [],
     end_point: null,
   };
+
+  panelStore.setPanelType(PANEL_TYPES.NULL);
 };
 
 const popupCancelHandle = () => {
@@ -243,6 +265,7 @@ const popupCancelHandle = () => {
 
 const popupConfirmHandle = () => {
   confirmHandle();
+  PathResult.value = [];
 };
 </script>
 <template>

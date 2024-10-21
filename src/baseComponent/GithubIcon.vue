@@ -7,7 +7,7 @@ const githubLink="https://github.com/Jinuss/maps"
 <style scoped>
 a.icss-github-corner,
 a.icss-github-corner-left {
-    font-size: 2.5em;
+    font-size: 1.8em;
     position: fixed;
     top: 0;
     right: 0;
