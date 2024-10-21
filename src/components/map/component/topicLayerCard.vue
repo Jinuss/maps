@@ -1,7 +1,8 @@
 <script setup>
 import { onMounted, ref } from "vue";
 import { storeToRefs } from "pinia";
-import { useTopicLayerStore, useMapStore } from "../../../store";
+import { PANEL_MAP_TYPE } from "../../../const";
+import { useTopicLayerStore, useMapStore, usePanelStore } from "../../../store";
 import { ClusterTools } from "../MapTools/ClusterTools";
 import { HeatMapTools } from "../MapTools/HeatMapTools";
 import { MaskTools } from "../MapTools/MaskTools";
@@ -17,6 +18,8 @@ import setting from "./setting.vue";
 
 const mapStore = useMapStore();
 const topicStore = useTopicLayerStore();
+
+const panelStore = usePanelStore();
 
 const { visible } = storeToRefs(topicStore);
 
@@ -104,8 +107,10 @@ const MAP_THEMES = [
   },
   {
     name: "矢量图高亮",
-    type: "timeMap",
-    callback: handleTimeMap,
+    type: "vectorHighlightMap",
+    callback: () => {
+      panelStore.setBigPanelType(PANEL_MAP_TYPE.VECTOR_LAYER);
+    },
     src: vectorImage,
   },
 ];

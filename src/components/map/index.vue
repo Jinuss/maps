@@ -28,11 +28,11 @@ import brp from "./brp.vue";
 import topicLayerCard from "./component/topicLayerCard.vue";
 import dragPanel from "./dragPanel/index.vue";
 import routePlan from "./component/routePlan.vue";
-import "ol/ol.css";
 import "./style.css";
 import { MapTools } from "./MapTools/index.tsx";
 import { useMapStore, useCardStore, usePanelStore } from "../../store";
 import { PANEL_TYPES } from "../../const/const.panel.tsx";
+import bigPanel from "./component/bigPanel.vue";
 
 const cardStore = useCardStore();
 const MapStore = useMapStore();
@@ -119,6 +119,7 @@ onMounted(() => {
     <topicLayerCard />
     <dragPanel />
     <routePlan v-if="type == PANEL_TYPES.ROUTE_PLAN" />
+    <bigPanel />
   </div>
 </template>
 <style scoped>
